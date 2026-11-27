@@ -70,3 +70,33 @@ de 1 micro por estrategia es chico frente al colchón: una cuenta personal o una
 Aporte al referente: deja una cartera de 10 motores con paridad verificada y un arreglo de reloj que evitaba falsos negativos de paridad.
 También mide con el simulador calibrado que, en cuentas con pérdida máxima fija y 1 micro mínimo, sumar estrategias baja la probabilidad
 de cobrar. La diversificación paga recién con más colchón.
+
+## 5. Revisión (2026-11-27, pedida por Nico): el criterio por intento era demasiado estricto
+La lectura de arriba usa el criterio heredado de `cartera_lucid`: máxima P(cobrar más que la evaluación) por intento. Tu regla de
+frecuencia (`docs/research/FRECUENCIA_PROP_20261119.md`) pide comparar por resultado **por mes**. Con el mismo simulador y los mismos
+caminos, la métrica justa por mes es la **ventaja por mes**: valor esperado por mes con la media contraída, menos el de «sin ventaja».
+Esa resta aísla lo que aporta la ventaja de lo que regala la estructura de la prop: la pérdida está topeada en el precio de la evaluación.
+Detalle completo en `VENTAJA_POR_MES.csv`.
+
+| cuenta | universo, plan | P(cobrar) por intento | ventaja/mes | ventaja/mes desde 2024 |
+|---|---|---|---|---|
+| 150K | 8, 1 micro c/u (plan vigente) | 0,269 | +$125 | +$129 |
+| 150K | 10, 1 micro c/u | 0,224 | +$153 | +$169 |
+| 150K | 8, 4 micros c/u | 0,125 | +$330 | +$503 |
+| 150K | 10, 4 micros c/u | 0,100 | +$337 | +$510 |
+| 150K | 8, riesgo igual B800 | 0,131 | +$377 | +$375 |
+| 50K | 8, inverso-vol B800 | 0,157 | +$314 | +$319 |
+| 25K | 8, 2 micros c/u | 0,170 | +$142 | +$224 |
+
+- **Por mes, la cartera de 10 iguala o supera a la de 8 en la 150K.** Con 1 micro c/u da +$153 contra +$125; con 4 micros, +$337 contra
+  +$330. Con tu regla de frecuencia, `Diversificada` es preferible en la 150K. Lo de la sección 3 (P por intento) era demasiado estricto
+  para tu criterio.
+- **El tamaño grande rinde más por mes en las tres cuentas**, aunque cobre con menos probabilidad por intento: pasa o se rompe más rápido
+  y se recompra. Para la 150K, de +$125 a +$330–377 por mes. Supuestos que lo condicionan:
+  - se recompra la evaluación cada vez que se rompe (≈ 7–9 de cada 10 intentos se pierden);
+  - el modelo de retiros de `cartera_lucid` es el real de Lucid;
+  - el deslizamiento no crece con el tamaño (hasta 88 micros simultáneos).
+
+  Es una decisión de riesgo y de bolsillo: la toma Nico.
+- El «sin ventaja» por mes da positivo en todos los planes grandes (150K B800: +$313/mes). Es el regalo de la estructura en el modelo; si
+  el modelo de retiros es optimista, ese número es el primero que se cae. Por eso la comparación usa la resta, no el valor esperado bruto.

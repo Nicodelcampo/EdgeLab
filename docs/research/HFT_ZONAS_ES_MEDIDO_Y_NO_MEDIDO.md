@@ -1526,3 +1526,17 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - HOLDOUT A5 de `CRIPTO_BINANCE` (sigue sellado);
   - ejecución real (maker contra taker) y forward.
+
+## 2026-11-27 — Revisión «demasiado estricto» (pedida por Nico)
+- **MEDIDO:**
+  - planes de cuenta por ventaja por mes (`preset_diversificada_20261127/VENTAJA_POR_MES.csv`);
+  - persistencia del barrido de Kaggle (Fisher p 0,014);
+  - potencia del overnight del Russell (228 meses);
+  - diagnóstico cripto top-8 punto en el tiempo (`cripto_pit_20261127/RESULTADO_TOP8.md`).
+- **Corregido:**
+  - stops ATR de FundedSync (vienen de `fundedsync_prop_opt_20261122`, no del holdout);
+  - universo de `Regla_V2_Clean`;
+  - «al nivel del azar».
+- **NO MEDIDO:**
+  - el modelo de retiros de Lucid contra las reglas reales;
+  - `Regla_V2_Clean` con micros enteros en NT8.

@@ -26,7 +26,7 @@ namespace NinjaTrader.NinjaScript.Strategies
     ///   Intradia   : MNQ T,R,Z,V,RQ5,Franklin + MES RQ5,ES5N (1 micro c/u), plano 16:40 ET y 20 min antes del fin de sesion.
     ///   Interdia   : MNQ SOM sin_finde, C2_VZ + MES C2_VZ (1 micro c/u), mantiene de noche (cuentas que lo permiten).
     ///   Diversificada (2026-11-27): Intradia + MNQ N y SOMEOD (10 estrategias, 1 micro c/u), plano 16:40 ET.
-    ///                NO para LucidFlex (baja la P de cobrar: 1 micro minimo suma riesgo); cuenta personal o colchon >= 2x 150K.
+    ///                LucidFlex 150K: menor P de cobrar por intento, mayor ventaja por mes que Intradia (decide Nico).
     ///                (docs/research/preset_diversificada_20261127/RESULTADO.md)
     ///   Rescate25K : MNQ T (1 micro): perdida maxima por dia ~$200 < colchon de la 25K; registro de ejecucion completo.
     ///                (docs/research/cartera_nt8_20261125/RESULTADO.md: el freno diario y mas estrategias BAJAN la probabilidad)

@@ -229,16 +229,16 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
-- **Las series FundedSync de los estudios de cartera usan todos los meses, también los HOLDOUT de A5** (`F-FUNDEDSYNC-SIN-HOLDOUT-A5-PARA-VARIANTES`, 2026-11-27, agente)
-  - Efecto: Variantes elegidas en 2019–2026 (stops ATR 0,25/0,50 de R/Z/N/W, V nm30_tp1400, SOM al cierre) y los estudios de cartera de Claude (ESTABILIDAD, REGLA, ADAPTAR-PRESENTE 1) leyeron los 478 días HOLDOUT A5. A igual volatilidad, la regla de cartera de Claude no supera a la cartera actual (walk-forward Sharpe 1,91 vs 1,89; caída −9.364 vs −14.499); su ventaja de caída era tamaño.
+- **Las series FundedSync de los estudios de cartera usan todos los meses, también los HOLDOUT de A5** (`F-FUNDEDSYNC-SIN-HOLDOUT-A5-PARA-VARIANTES-B`, 2026-11-27, agente)
+  - Efecto: Corrección 2026-11-27: los stops ATR de R/Z/N/W NO se eligieron mirando el holdout; son la configuración de fundedsync_prop_opt_20261122 (DESC→REP) y la que corre en NT8. Sólo V_nm30_tp1400 y T_ES_adapt son variantes nuevas. Sigue en pie que los estudios de cartera (Antigravity y Claude) leyeron los 478 días HOLDOUT A5 de las series FundedSync. A igual volatilidad la regla de Claude no supera a la actual (WF 1,91 vs 1,89); Regla_V2_Clean (motores operables en NT8, pesos acotados) sí baja la caída intradía (−8.712 vs −14.499, Sharpe 1,94 vs 1,89).
   - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09
-  - Siguiente: Variantes FUNDEDSYNC sólo se confirman en el terminal y el forward. Los stops ATR van a NT8 como capa de riesgo declarada, no como mejora medida. Preset NT8 sin F/C/O con tamaño por cuenta (simulador calibrado cartera_lucid.py).
+  - Siguiente: Confirmar FundedSync sólo en terminal y forward. Llevar Regla_V2_Clean (sin la V re-preciada) a NT8 con micros enteros y medirla con el simulador de cuentas por ventaja/mes.
   - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
-- **En cuentas prop con pérdida máxima fija y 1 micro como mínimo por estrategia, sumar estrategias decorrelacionadas suma riesgo** (`F-PROP-UN-MICRO-MINIMO-SUMAR-RESTA`, 2026-11-27, agente)
-  - Efecto: LucidFlex 150K, media contraída: 8 estrategias P(cobrar) 0,269 vs 10 (+N, SOMEOD) 0,224, con el mismo plan (1 micro c/u); Sharpe diario 0,085 vs 0,090 (no es calidad: sd +25 %, peor día −4.685 → −6.246). 25K y 50K: la de 10 no supera a «sin ventaja» por 0,05.
+- **Elegir el plan de una cuenta prop por ventaja por mes (EV/mes con la media contraída menos EV/mes sin ventaja) y no por P(cobrar) por intento** (`F-PROP-POR-MES-VS-POR-INTENTO`, 2026-11-27, agente)
+  - Efecto: LucidFlex 150K: por intento, 8 estrategias 0,269 vs 10 0,224; por mes, 10 ≥ 8 (1 micro +$153 vs +$125; 4 micros +$337 vs +$330; desde 2024 +$510 vs +$503). Más tamaño rinde más por mes en 25K/50K/150K (150K +$125 → +$330–377) con 87–90 % de intentos perdidos y recompra.
   - Dónde: MNQ/MES 1 micro, corridas NT8 + arnés, 2020 → 2026-09; simulador calibrado tools/cartera_lucid.py
-  - Siguiente: Diversificar con más estrategias sólo donde el colchón es ≥ 2× el de la 150K o en cuenta personal (preset Diversificada); en Lucid, Intradía 8.
-  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`
+  - Siguiente: Decisión de Nico (tamaño y recompra). Validar el modelo de retiros de Lucid contra las reglas reales antes de subir tamaño: el «sin ventaja» por mes positivo es lo primero que cae si el modelo es optimista.
+  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES.csv`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación
@@ -489,11 +489,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: ETFs Yahoo ajustados 2005 → 2026-09, partición A5 por mes
   - Siguiente: Retomar sólo con más información por mes (futuros reales, 40–60 mercados) o como filtro de régimen; nunca eligiendo energía y metales porque ganaron.
   - Evidencia: `docs/research/tendencia_no_equity_20261127/RESULTADO.md`
-- **Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en perpetuos USDT-M, universo top-25 punto en el tiempo (incluye monedas dadas de baja)** (`F-CRIPTO-TENDENCIA-DECORRELACIONADA-B`, 2026-11-27, agente)
-  - Efecto: Con 20 pb ida y vuelta + funding: 1/N DESC+REP +$76/mes sobre $10k (t 1,21, p 0,11); REP −$84 (las 3 reglas negativas en REP). Con las 8 monedas de hoy y sólo comisión la REP daba +$382: la réplica venía de la selección de monedas. Ninguna pasa BH q 0,10. Correlación con CME +0,02 (auditoría).
+- **Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en perpetuos USDT-M, universo top-25 punto en el tiempo (incluye monedas dadas de baja)** (`F-CRIPTO-TENDENCIA-DECORRELACIONADA-C`, 2026-11-27, agente)
+  - Efecto: Con 20 pb ida y vuelta + funding: 1/N DESC+REP +$76/mes sobre $10k (t 1,21, p 0,11); REP −$84 (las 3 reglas negativas en REP). Con las 8 monedas de hoy y sólo comisión la REP daba +$382: la réplica venía de la selección de monedas. Ninguna pasa BH q 0,10. Correlación con CME +0,02 (auditoría). Diagnóstico top-8 punto en el tiempo: REP −$28/mes con 20 pb y ≈ $0 con 10 pb → la REP positiva de la auditoría era selección de monedas (supervivencia), no amplitud.
   - Dónde: Binance USDT-M 2021-01 → 2026-09, DESC y REP de A5 (HOLDOUT sellado)
   - Siguiente: No sumar a la cartera ni abrir el HOLDOUT A5. Papel/forward sólo si Nico abre una cuenta cripto; una campaña nueva con reglas pre-registradas en DESC y su propia REP, sin re-optimizar éstas.
-  - Evidencia: `docs/research/cripto_pit_20261127/RESULTADO.md`
+  - Evidencia: `docs/research/cripto_pit_20261127/RESULTADO.md`, `docs/research/cripto_pit_20261127/RESULTADO_TOP8.md`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
@@ -589,10 +589,10 @@ _Regla congelada que se sigue hacia adelante (papel)._
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
-- **Barrido de 6 mecanismos canónicos (Donchian, ORB, overnight, volbreak, fade, precierre) en 15 mercados M1 + 8 M1DK, eligiendo los positivos en DESC y REP** (`F-MULTIACTIVO-MECANISMOS-AL-NIVEL-DEL-AZAR`, 2026-11-27, agente)
-  - Efecto: 8 de 99 positivos en los dos bloques; ninguno con t ≥ 2 en REP; DK_WTI_DON con 56 operaciones en 14 años. Persistencia algo mayor que el azar (P(REP+|DESC+) 0,33 vs 0,11), mayormente por fricción. No repetir: elegir sobrevivientes de una grilla de mecanismos genéricos.
+- **Barrido de 6 mecanismos canónicos (Donchian, ORB, overnight, volbreak, fade, precierre) en 15 mercados M1 + 8 M1DK, eligiendo los positivos en DESC y REP** (`F-MULTIACTIVO-MECANISMOS-PERSISTENCIA-SIN-POTENCIA`, 2026-11-27, agente)
+  - Efecto: Corrección 2026-11-27: no está al nivel del azar. 8 positivos en DESC y REP contra 3,9 esperados (Fisher una cola p 0,014); la persistencia más fuerte es la de los negativos (overnight ES/EMD/FTSE pierden en ambos). Ninguno con t ≥ 2 en REP; el mejor (CME_RTY_OVN_RAW, DESC t 2,17, REP 0,61) necesita 228 meses para decidir (K27).
   - Dónde: 15 mercados M1 Kaggle + 8 M1DK, 2012 → 2026-09, A5 DESC/REP
-  - Siguiente: Si se sigue, una sola hipótesis pre-registrada de tendencia diversificada en muchos futuros no-equity (energía, metales, tasas), no los 8 sobrevivientes.
+  - Siguiente: No elegir sobrevivientes de una grilla de mecanismos genéricos; si se sigue, una hipótesis única con más información por mes (canasta multi-activo pre-registrada).
   - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
 - **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
   - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.

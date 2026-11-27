@@ -5,6 +5,25 @@ los artefactos de esta carpeta. Las corridas no tenían pre-registro: quedaron c
 
 North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
+> **Corrección (2026-11-27, revisión pedida por Nico: «quizás fuiste demasiado estricto»).** Tres afirmaciones de esta revisión eran más
+> duras de lo que la evidencia permite:
+> 1. **Los stops ATR de R, Z, N y W no se eligieron mirando el holdout.** Son la configuración de `fundedsync_prop_opt_20261122`
+>    (pre-registrada, DESC → REP) y la que corre en NT8 (`R_osc30_end660_ATR50`, `Z_b15_e20_eff40_ATR50`, `N_d5_fbTrue_ATR25`,
+>    `W_slope_allowReFalse_ATR25`). Sólo `V_nm30_tp1400` y `T_ES_adapt` son variantes nuevas de la auditoría.
+>    - Lo que sigue en pie: las series de los estudios de cartera (de Antigravity y de Claude) usan también los meses HOLDOUT de A5.
+> 2. **El universo de `Regla_V2_Clean` no está armado mirando el futuro**, salvo V re-preciada. Es el de los motores operables en NT8:
+>    un criterio previo y legítimo. Su walk-forward (2021-07 → 2026-09, pesos sólo con historia) a igual volatilidad sigue en pie, con esa
+>    salvedad: Sharpe 1,94 contra 1,89, y caída intradía −8.712 contra −14.499.
+> 3. **El barrido de Kaggle no está «al nivel del azar».** 8 sobrevivientes contra 3,9 esperados: Fisher una cola p 0,014. La persistencia
+>    más fuerte es la de los negativos (overnight de ES, EMD y FTSE pierden en los dos bloques). Ningún sobreviviente tiene t ≥ 2 en REP. El
+>    mejor (overnight del Russell, DESC t 2,17) no tiene potencia: 228 meses para decidir.
+>
+> Lo que **no** cambia, verificado:
+> - La ventaja cripto de la auditoría dependía de las monedas elegidas con información de hoy. El top-8 punto en el tiempo da REP −$28/mes
+>   con 20 pb y ≈ $0 con 10 pb (`cripto_pit_20261127/RESULTADO_TOP8.md`).
+> - F, C y O no son operables en NT8.
+> - La regla de Claude no supera a la actual a igual riesgo.
+
 ## 1. Críticas a REGLA-CARTERA que se aceptan
 
 | Crítica | Verificación | Consecuencia |
