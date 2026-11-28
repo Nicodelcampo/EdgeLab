@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (48)
+## PISTA_VIVA (50)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -39,6 +39,16 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: DAX, FTSE, CAC, EuroStoxx, Nikkei, Hang Seng, ASX, TSX y S&P, Nasdaq 100, Dow, Russell (Yahoo D1); canasta sellada de 16 en M1 NT8
   - Siguiente: Expectativa calibrada para Carril 2 en vivo: Sharpe ≈ 0,5–0,7; vigilar TERMINAL >= 2026-10-01 y forward sin cambiar pesos.
   - Evidencia: `docs/research/confianza_sin_forward_20261127/RESULTADO.md`, `docs/research/confianza_sin_forward_20261127/RESULTADO.json`, `docs/research/confianza_sin_forward_20261127/DSR_HAIRCUT.json`, `docs/research/confianza_sin_forward_20261127/AUDITORIA_H1_H3.json`
+- **Efectos de calendario/eventos y relative-value en futuros CME M1 (ES, NQ, YM, GC; 2008-01→2026-09, 129m DESC + 38m REP = 167m DR, 159 eventos FOMC, HOLDOUT 63m sellado)** (`F-M1-RELVAL-EVENTOS-20Y`, 2026-11-27, sesion)
+  - Efecto: Falla el RV intradía puro (MRV1 dispersión 5d DR Sh=-0,344 t=-1,28; MRV2 overnight vs RTH DR Sh=-0,452 t=-1,69) y el VRP M1 de ES/NQ/GC frente a igual exposición BH (MRV4 exceso sobre BH Sh=-0,205 t=-0,77, aunque bruto Sh=0,713). Sobrevive limpiamente MRV3_PreFOMC_Drift_M1 (8,43x/año): DESC Sh=0,733 (t=2,40), REP Sh=0,577 (t=1,03), DR 167m Sh=0,685 (t=2,56, p=0,0053), 2x=0,618, MDD@10%=-7,70%, Calmar=0,89, ortogonal a Carril 2 (corr=-0,038) y RP4 (corr=-0,207).
+  - Dónde: Futuros CME M1 (ES, NQ, YM, GC) 2008-01 → 2026-09 (129m DESC + 38m REP = 167m DR)
+  - Siguiente: Mantener HOLDOUT 63m sellado. No repetir RV intradía ni VRP en índices sin exceso sobre BH. Combinar MRV3 con MVC_Canasta_InvVol (corr=+0,021) y buscar 1 frente macro/FX adicional de 20 años para elevar el poder K27 del pool sellado desde 0,714 (1,0x) / 0,461 (0,7x) hasta >=0,80 antes de abrir A5.
+  - Evidencia: `docs/research/m1_relval_eventos_20261127/RESULTADO.md`, `docs/research/m1_relval_eventos_20261127/RESULTADO.json`, `docs/research/espiral_sintesis_20261127/RESUMEN.md`
+- **CTA multi-horizonte sin equity (16 ETFs macro, 21/63/126/252d) + Vol-Managed Moreira-Muir (TLT, IEF, GLD, DBC, HYG, 1/var_21d), 2006-01→2026-09 (186m DESC+REP, HOLDOUT 63m sellado)** (`F-MACRO-CTA-VRP-20Y`, 2026-11-27, sesion)
+  - Efecto: Excluidos MVC2 (VIX term structure FTQ: DR Sh=0,070) y MVC3 (carry tasas/real yield: DR Sh=-0,299). Sobreviven MVC1_CTA_NonEq_MultiHorizon (alfa direccional ortogonal genuino: DR Sh=0,426 t=1,68, corrC2=-0,036, corrRP4=+0,046, corrSPY=-0,256) y MVC4_MoreiraMuir_VolManaged (risk-parity multiactivo long-only vol-escalado: DESC Sh=0,578, REP Sh=1,495, DR Sh=0,766 t=3,02, 2x=0,731, MDD=-17,22%, Calmar=0,45, corrC2=+0,101, corrRP4=+0,475; aclaración: MVC4 NO supera a la referencia estática 1/vol sobre los mismos 5 ETFs, Sh=0,838, MDD=-19,43%, Calmar=0,43). Canasta MVC_Canasta_InvVol (59,72% MVC1 + 40,28% MVC4): DESC Sh=0,663, REP Sh=1,138, DR 186m Sh=0,773 (t=3,04, p=0,0012; 0,693 t=2,59 en el solape 167m con MRV), 2x=0,667, MDD@10%=-15,18%, 81,0% años+, corrC2=+0,042. Pool nuevo sellado 2F (50% MVC + 50% MRV, 167m): DR Sh=0,964 (t=3,59, MDD=-10,29%, K27 1,0x=0,714, 0,7x=0,461); arquitectura 20y 4F (Carril2+RP4+MVC+MRV): DR Sh=1,211 (t=4,52, MDD=-9,02%, N_eff=3,70/4,00).
+  - Dónde: 16 ETFs macro no-equity + TLT/IEF/GLD/DBC/HYG, 2006-01 → 2026-09 (186m DESC+REP)
+  - Siguiente: Mantener HOLDOUT A5 63m sellado. Expandir la espiral en 2 frentes antes de abrir A5: (a) 1 frente ortogonal de 20 años (calendario/carry FX Dukascopy EURUSD/USDJPY/WTI o commodities/bonos) para acercar K27@0,7x a 0,80 sobre el pool nuevo; (b) Binance daily/metrics (OI + Top-Trader L/S) para N en cripto.
+  - Evidencia: `docs/research/macro_cta_vrp_20261127/RESULTADO.md`, `docs/research/macro_cta_vrp_20261127/RESULTADO.json`, `docs/research/espiral_sintesis_20261127/RESUMEN.md`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -665,7 +675,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (72)
+## NO_REPETIR (73)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -689,6 +699,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: GD30/AL30, GD35/AL35, GD38/AE38, GD41/AL41 en pesos, diario data912, 2021-09 → 2026-09 (DESC y REP de A5)
   - Siguiente: No repetir rebalanceo continuo diario ni swing GD30/AL30 post-cepo. Para swing eventual en GD35/38/41 usar banda muerta (|z|>=1,5) + spreads de rueda; para intradía usar TradingView+Masella o BYMA Market Data.
   - Evidencia: `docs/research/bonos_rotacion_20261127/RESULTADO.md`, `docs/research/bonos_rotacion_20261127/RESULTADO.json`
+- **Carry puro y reversión por shock de funding rate 8h + XSMOM filtrado por carry en 226 perpetuos USDT-M PIT de Binance (2021→2026-09, 39m DESC + 12m REP = 51m DR, HOLDOUT 18m sellado, escalonado 5d, neto 20 pb RT + funding real)** (`F-CRIPTO-FUNDING-CARRY-PIT`, 2026-11-27, sesion)
+  - Efecto: DESC+REP (51m, HOLDOUT 18m sellado): carry puro CFC1 Sh=-0,20 (t=-0,41) y reversión por shock CFC2 Sh=+0,06 (t=+0,12) no generan ventaja neta tras fricción. XSMOM filtrado por carry CFC3 alcanza DESC Sh=+1,24 pero colapsa en REP Sh=-1,03 (DR Sh=+0,68, t=+1,40; corr_CR3=+0,441, corr_OFI=+0,518). Canasta CFC (100% CFC3): +257,3 USD/m, Sh=0,68, p=0,0802.
+  - Dónde: 226 perpetuos USDT-M PIT de Binance Vision, 2021 → 2026-09 (DESC 39m + REP 12m de A5)
+  - Siguiente: No repetir carry puro ni reversión por shock de funding 8h sin otro filtro. Próximo paso ortogonal en cripto: evaluar Open Interest y Top-Trader Long/Short ratio diarios (data.binance.vision/data/futures/um/daily/metrics, HTTP 200 verificado).
+  - Evidencia: `docs/research/cripto_funding_carry_20261127/RESULTADO.md`, `docs/research/cripto_funding_carry_20261127/RESULTADO.json`
 - **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
   - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.
   - Dónde: NQ M1 de NT8, 2012 → 2026-09, USD con 1 MNQ

@@ -238,3 +238,30 @@ Auditoria completa y correcciones en código/registros ejecutadas tras hacer fas
   §6–§9.
   - Grabador diario: `tools/bonos_masella_grabar.py`; la rueda del 2026-11-27 ya está grabada.
   - Para el intradía histórico: BYMADATA Prefer o la API de Primary con cuenta. TradingView no sirve (K62).
+
+## 16. Avance en Espiral Fase 1 (Antigravity, 2026-11-27)
+
+Trabajo nuevo **estrictamente en `DESC + REP` (`< 2026-10-01`)**, con `HOLDOUT A5` (63m / 18m) y `TERMINAL` **100 % sellados** y pre-registrado en `TRIAL_REGISTRY_GLOBAL.jsonl` antes de correr:
+
+1. **`CRIPTO-FUNDING-CARRY-20261127` (`tools/cripto_funding_carry_20261127.py`, `226` perpetuos USDT-M PIT, `2021 → 2026-09`, `39m DESC + 12m REP = 51m DR`, 20 pb RT + funding real):**
+   - `CFC1_FundingCarry_14d_Stag5d`: `DESC Sh=-0,05 | REP Sh=-0,64 | DR Sh=-0,20 (t=-0,41)` → **FALLA**.
+   - `CFC2_FundingShock_Rev_Stag5d`: `DESC Sh=+0,03 | REP Sh=+0,17 | DR Sh=+0,06 (t=+0,12)` → **FALLA**.
+   - `CFC3_CarryFilt_XSMOM_Stag5d`: `DESC Sh=+1,24 | REP Sh=-1,03 | DR Sh=+0,68 (t=+1,40) | corr_CR3=+0,441 | corr_OFI=+0,518` → colapsa en REP.
+   - `CFC_Canasta_InvVol` (`100% CFC3`): `+257,3 USD/m, Sh=0,68, p=0,0802`. Veredicto honesto: `NO_REPETIR` para carry puro y shock 8h; próximo frente cripto candidato verificado `HTTP 200`: `data.binance.vision/data/futures/um/daily/metrics` (OI + Top-Trader L/S).
+
+2. **`M1-RELVAL-EVENTOS-20261127` (`tools/m1_relval_eventos_20261127.py`, `2008-01 → 2026-09`, `129m DESC + 38m REP = 167m DR`, `159` eventos FOMC):**
+   - `MRV1_CrossIdx_Disp_5d`: `DR Sh=-0,344 (t=-1,28)` → **FALLA**.
+   - `MRV2_OvnVsRTH_RelVal`: `DR Sh=-0,452 (t=-1,69)` → **FALLA**.
+   - `MRV4_TrueM1_VRP_ESNQGC`: bruto `Sh=0,713`, pero **exceso vs igual exposición BH `=-0,205 (t=-0,77)`** → excluido limpiamente.
+   - **`MRV3_PreFOMC_Drift_M1`**: `DESC Sh=0,733 (t=2,40) | REP Sh=0,577 (t=1,03) | DR Sh=0,685 (t=2,56, p=0,0053) | 2x=0,618 | MDD@10%=-7,70% | Calmar=0,89 | corr_Carril2=-0,038 | corr_RP4=-0,207` → **SOBREVIVIENTE ORTOGONAL**.
+
+3. **`MACRO-CTA-VRP-20261127` (`tools/macro_cta_vrp_20261127.py`, `2006-01 → 2026-09`, `186m DR`):**
+   - Excluidos `MVC2_VIX_TermStruct_FTQ` (`DR Sh=0,070`) y `MVC3_Rates_RealYield_Carry` (`DR Sh=-0,299`).
+   - **`MVC1_CTA_NonEq_MultiHorizon`**: `DESC Sh=0,425 | REP Sh=0,422 | DR Sh=0,426 (t=1,68, p=0,0468) | corr_Carril2=-0,036 | corr_RP4=+0,046 | corr_SPY=-0,256` (alfa direccional ortogonal genuino).
+   - **`MVC4_MoreiraMuir_VolManaged`** (`1/var_21d` en `TLT, IEF, GLD, DBC, HYG`): `DESC Sh=0,578 | REP Sh=1,495 | DR Sh=0,766 (t=3,02) | 2x=0,731 | MDD=-17,22% | Calmar=0,45 | corr_Carril2=+0,101 | corr_RP4=+0,475` — aclaración honesta: **NO supera a la referencia estática `1/vol` sobre los mismos 5 ETFs (`Sh=0,838`, `MDD=-19,43%`, `Calmar=0,43`)**.
+   - **`MVC_Canasta_InvVol`** (`59,72% MVC1 + 40,28% MVC4`): `DESC Sh=0,663 (t=2,30) | REP Sh=1,138 (t=2,13) | DR 186m Sh=0,773 (t=3,04, p=0,0012; 0,693 t=2,59 en el solape 167m con MRV) | 2x=0,667 | MDD@10%=-15,18% | 81,0% años+ | corr_Carril2=+0,042 | corr_RP4=+0,336`.
+
+4. **Síntesis de Espiral (`tools/espiral_sintesis_20261127.py` → `espiral_sintesis_20261127/RESUMEN.md`):**
+   - **`Pool_Nuevo_Sellado_2F_EQ` (`50% MVC + 50% MRV`, `167m` DR, 63m HOLDOUT 100% sellado):** `corr(MVC, MRV)=+0,021`; `DESC Sh=0,937 (t=3,07) | REP Sh=1,150 (t=2,05) | DR Sh=0,964 (t=3,59, p=0,0002) | MDD@10%=-10,29% | Calmar=0,94` | Poder K27 (63m): `0,461` (`0,7x`) y `0,714` (`1,0x`).
+   - **`Arquitectura_20y_4F_EQ` (`Carril2 + RP4 + MVC + MRV`, `167m` DR):** `DR Sh=1,211 (t=4,52) | MDD@10%=-9,02% | Calmar=1,34 | N_eff PCA = 3,70 / 4,00`.
+   - **`Arquitectura_Multi_6F_EQ_51m` (`4F_20y + Cripto_v3 + Cripto_OFI`, `51m` DR):** `DESC Sh=1,368 | REP Sh=4,018 | DR Sh=1,749 (t=3,61) | MDD@10%=-6,55% | Calmar=2,67`.
