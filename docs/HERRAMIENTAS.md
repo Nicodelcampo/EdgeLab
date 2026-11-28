@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-795 scripts.
+801 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -181,9 +181,12 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/canastas_vigentes.py` | Documento único y auditable de las canastas vigentes (pedido de Nico, 2026-11-17: «subí las canastas a donde se lean y puedan auditar»). |
 | `tools/candidata_referencia.py` | Referencia Python de una variante FundedSync tal como la corre `EdgeLabCandidataFS` en NT8 (para la paridad). |
 | `tools/carril2.py` | CARRIL2-LOTE1: IBS+VIX, Double Seven, Turnaround Tuesday y cambio de mes sobre el motor de barras calibrado |
+| `tools/carril2_canonica_h3_20261127.py` | CARRIL2-CANONICA-H3: Reconciliación descriptiva (#7 de PLAN_ESPIRAL_20261127.md) entre OPS_H3_PLACEBO y OPS_LOTE1/2. |
 | `tools/carril2_cierre.py` | CARRIL2-CIERRE (pre-registro docs/research/carril2_20261119/PREREGISTRO_CIERRE.md): las reglas del lote 1 entrando a las 15:56 (cierre RTH) |
 | `tools/carril2_crash.py` | CARRIL2-CRASH (pre-registro docs/research/carril2_20261119/PREREGISTRO_CRASH.md): IBS, Double Seven y pico de VIX con el filtro «no comprar con |
+| `tools/carril2_emd_20261127.py` | CARRIL2-EMD: Transferencia congelada de Carril 2 a E-mini S&P MidCap 400 (EMD, M1 NT8, 2006–2026-09). |
 | `tools/carril2_extension.py` | CARRIL2-EXTENSION (2026-11-26): las definiciones de Carril 2 (lotes 1 y 2) hasta 2026-09-30 con `tools/carril2.py::correr` sin |
+| `tools/carril2_vol_local_20261127.py` | CARRIL2-VOL-LOCAL: Corrección K61 de volatilidad implícita local en C2_VBB, C2_VZ y C2_EVRP. |
 | `tools/cartera_cripto_binance.py` | NUEVO FRENTE CRIPTO (2026-11-26): Descarga historica limpia de Binance Futures USDT-M (2020-09 -> 2026-09, |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
 | `tools/cartera_gestion_analisis.py` | Lectura de RESULTADOS_GESTION.json (kernel Kaggle edgelab-cartera-gestion-20261125) con el criterio pre-registrado |
@@ -233,6 +236,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/cripto_pit_v2.py` | CRIPTO-PIT v2 (2026-11-27): Universo PIT limpio + correccion del bug de neutralizacion + 5 mecanismos de baja rotacion. |
 | `tools/cripto_pit_v3.py` | CRIPTO-PIT v3 (Pre-registrado): Microestructura Basis (premiumIndexKlines) + Beta-Neutralizacion + 5 Mecanismos Escalonados. |
 | `tools/cripto_v3_2019.py` | CRIPTO-V3-2019 (pre-registro docs/research/cripto_v3_2019_20261127/PREREGISTRO.md): la canasta CRIPTO-PIT v3, sin cambios, en el |
+| `tools/cripto_xsmom_spot_2017_2019.py` | CRIPTO-XSMOM-SPOT-PRE: CR3_XSMOM_21d_Stag5d y CR3_XSMOM_BetaNeut_Stag5d en Binance Spot (2017-08 → 2019-08). |
 | `tools/cubos_regimen.py` | Cubos de operaciones para buscar regímenes offline (`edgelab/research/regimen_offline.py`). |
 | `tools/curvas_confirma_forward.py` | Curvas de las canastas que confirman en HOLDOUT A5 o van a forward (lee series ya publicadas; no abre nada). Uso: PYTHONPATH=. python tools/curvas_confirma_forward.py |
 | `tools/daily_data_health.py` | Chequeo diario de datos (R0: captura continua). Detecta que la captura se haya cortado y que el respaldo de L2 este al dia. |
@@ -302,6 +306,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_semejanza_diag.py` | Diagnóstico target-free de la semejanza v1 vs v2 de ESPEJO-IND (2026-09-27). Sin desenlaces ni P&L. |
 | `tools/espejo_semejanza_nico.py` | Semejanza «a lo Nico» entre la ida A→B y la vuelta, validada contra sus órdenes por tandas de a tres (target-free). |
 | `tools/espejo_vollimp.py` | ESPEJO-VOLLIMP-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_VOLUMEN_LIMPIEZA_100T_20260928.md |
+| `tools/espiral_fase2_sintesis_20261127.py` | ESPIRAL-FASE2-SINTESIS: Síntesis descriptiva Multi-Frente Fase 1 + Fase 2 (estrictamente DESC+REP; HOLDOUT A5 sellado). |
 | `tools/espiral_sintesis_20261127.py` | Espiral Fase 1 — Síntesis de correlación, N_eff y potencia K27 en DESC+REP (HOLDOUT A5 100% sellado). |
 | `tools/estabilidad_cartera.py` | ESTABILIDAD-CARTERA (2026-11-26): caída del final de las carteras INTRADIA8/INTERDIA3, mitigaciones declaradas (inverso de |
 | `tools/estado.py` | estado.py — UN comando que dice dónde estás parado. Correlo al abrir sesión. |
@@ -346,6 +351,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/fundedsync_satelites_prop.py` | Quantified Monte Carlo & Portfolio proposals to monetize excluded profitable strategies. |
 | `tools/fundedsync_tanda2.py` | FundedSync tanda 2 (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md). |
 | `tools/futuros_no_equity_v2.py` | FUTUROS-NO-EQUITY v2 (2026-11-27): 22 futuros continuos reales de 5 clases balanceadas (Energia, Metales, |
+| `tools/fx_macro_fix_20261127.py` | FX-MACRO-FIX-20Y: Reloj de Sesión FX (K58), Oro Asia/Londres vs NY, Rebalanceo Treasury Fin de Mes y XS-Momentum No-Equity (2006–2026-09). |
 | `tools/gc_current_logic_l2_census.py` | GC May31 current-logic event census; target-free, never mirror.run/outcomes. |
 | `tools/gc_exact4_prepare.py` | Local metadata capture / exact4 target-free census. Never computes outcomes. |
 | `tools/gc_exact4_review.py` | Audit private exact4 census; bind layers to the original chart bundle. |

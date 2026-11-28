@@ -265,3 +265,26 @@ Trabajo nuevo **estrictamente en `DESC + REP` (`< 2026-10-01`)**, con `HOLDOUT A
    - **`Pool_Nuevo_Sellado_2F_EQ` (`50% MVC + 50% MRV`, `167m` DR, 63m HOLDOUT 100% sellado):** `corr(MVC, MRV)=+0,021`; `DESC Sh=0,937 (t=3,07) | REP Sh=1,150 (t=2,05) | DR Sh=0,964 (t=3,59, p=0,0002) | MDD@10%=-10,29% | Calmar=0,94` | Poder K27 (63m): `0,461` (`0,7x`) y `0,714` (`1,0x`).
    - **`Arquitectura_20y_4F_EQ` (`Carril2 + RP4 + MVC + MRV`, `167m` DR):** `DR Sh=1,211 (t=4,52) | MDD@10%=-9,02% | Calmar=1,34 | N_eff PCA = 3,70 / 4,00`.
    - **`Arquitectura_Multi_6F_EQ_51m` (`4F_20y + Cripto_v3 + Cripto_OFI`, `51m` DR):** `DESC Sh=1,368 | REP Sh=4,018 | DR Sh=1,749 (t=3,61) | MDD@10%=-6,55% | Calmar=2,67`.
+
+## 17. Avance en Espiral Fase 2 (Antigravity, 2026-11-27 — listo para auditoría de Claude)
+
+Ejecutados los `4` pilares pre-registrados y contados (K32/K51/K58/K60/K61/K64) + la reconciliación canónica `#7`:
+
+1. **`FX-MACRO-FIX-20261127` (`tools/fx_macro_fix_20261127.py`, `186m` DESC+REP, HOLDOUT 63m sellado):**
+   - **Hallazgo de huso horario K58 en `data/m1dk/*.csv`:** Dukascopy sella en **`America/New_York + 7h`** (desfase vs UTC de `120 min` en enero y **`180 min`** ya en la semana del `18–22` de marzo por DST US antes de Europa). Tras restar `7h` → `America/New_York` → UTC, `exigir_alineada` vs `GC_M1_nonadj_utc.parquet` da desfase `0` con `corr = 0,9255` (ene), `0,9863` (mar) y `0,8548` (jul).
+   - `FXF1_FX_Clock_Session_EURJPY`: **`DR Sh=-0,938 (t=-3,69)`** (`1002x/año`) → falla neta severa.
+   - `FXF2_Gold_AsianOvn_vs_NY`: `DR Sh=+0,306 (t=+1,20)`, `2x=-0,409` (`501x/año`); la pierna `xau_overnight_long` da `Sh=1,281 (t=5,04)` mientras el short COMEX RTH da `+0,068` pero la doble fricción diaria anula al stress `2x`.
+   - **`FXF3_Treasury_MonthEnd_Rebal`** (`TLT/IEF` `24,2x/año`): **`DESC Sh=0,427 | REP Sh=0,254 | DR Sh=0,394 (t=1,55)`**, ortogonal a todo (`corr_MVC=-0,023`, `corr_MRV3=-0,141`, `corr_SPY=+0,014`).
+   - `FXF4_NonEq_XS_Mom_12ETFs`: `DESC=+0,370`, **`REP=-1,112`**, `DR=-0,001`. Canasta `FXF_Canasta_InvVol`: `REP=-0,737`, `DR=+0,265`.
+
+2. **`CARRIL2-EMD-20261127` (`tools/carril2_emd_20261127.py`, `EMD` M1 NT8 `2006–2026-09`, K33 estimado base `0,4378` pts):**
+   - `nucleo_5` todo (`249m`): `Regla Sh=0,611 (t=2,78)` vs `Control N Sh=0,095`, **`diff = +0,443 (t=2,02, p=0,0218)`**.
+   - Corte pre-registrado **`2009+` (`213m`, `#3` del plan):** `nucleo_5` `diff = +0,220 (t=0,93)` (`NO_CONCLUYENTE`); `todas_9` `diff = +0,097 (t=0,41)`; `2019+` `-0,217`. Valida el mecanismo en instrumento virgen y confirma la reducción de tamaño en vivo esperada (`0,4–0,6`).
+
+3. **`CRIPTO-XSMOM-SPOT-20261127` (`tools/cripto_xsmom_spot_2017_2019.py`, `64` pares Binance Spot PIT, `2017-10 → 2019-08`, `20 pb RT`, muestra K60 intacta):**
+   - Sin excluir ceros de `2017-10..2018-06` (`< 10` pares elegibles): `CR3_XSMOM_21d_Stag5d Sh=0,44 (t=0,61)`, `ex-2017 (20m) Sh=0,47 (t=0,61)`; `BetaNeut Sh=0,45 (t=0,62)`. **`NO_CONCLUYENTE`** por potencia (`Q2-2019 -2.557 USD`), consistente en signo positivo ex-2017 (`short_leg=+0,34`, `long_leg=-0,06`).
+
+4. **`CARRIL2-VOL-LOCAL-20261127` (`#4`) + `CARRIL2_CANONICA_H3` (`#7`) + Síntesis Fase 2 (`espiral_fase2_sintesis_20261127/RESUMEN.md`):**
+   - Corrección K61 (`ASX200/^AXVI`, `Dow/^VXD`, `Russell2000/^RVX`, `GC/^GVZ`; Yahoo `^V2TX/^VHSI/^JNIV/^VDAX` dan 404 bajo K62): **`C2_VBB`** sube de `-0,075` con `^VIX` a **`+0,427 (t=1,73, diff=+0,589 t=2,32)`** y `C2_EVRP_1F` a `+0,614 (t=2,80)`. **Hallazgo K58/K61 crítico:** en `confianza_sin_forward`, `ASX200` (`16:00 AEST = 02:00 NY`) usaba CBOE `^VIX` del mismo día (`16:15 NY`, **`14h` después**), creando un falso `Sh=2,797 (t=12,11)` en `C2_VZ` que cae a `0,163 (t=0,71)` con `^AXVI` simultáneo.
+   - Reconciliación `#7` (`canasta_amplia_20261127/SERIE_CANONICA_H3.md`): `SERIE_CANONICA_CARRIL2` sin censura de frontera da `DESC=1,068 (2249 ops)`, `REP=1,256 (589 ops)`, `HOLDOUT=1,057 (902 ops)`, `TODO 249m=1,098 (t=5,00)`.
+   - Síntesis Fase 2 (`167m` comunes DR): **`N_eff PCA 5F = 4,62 / 5,00`** (`C2, RP4, MVC, MRV3, FXF3`); **`Pool_Sellado_3F_EQ (MVC+MRV+FXF3, 63m HO intacto)` = `DR Sh=1,060 (t=3,95)`** (`K27 1,0x=0,783`, `40/40/20: Sh=1,071, K27 1,0x=0,791`); `Arquitectura_5F_20y` = **`DR Sh=1,250 (t=4,66)`**.

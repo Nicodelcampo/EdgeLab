@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (50)
+## PISTA_VIVA (51)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -49,6 +49,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: 16 ETFs macro no-equity + TLT/IEF/GLD/DBC/HYG, 2006-01 → 2026-09 (186m DESC+REP)
   - Siguiente: Mantener HOLDOUT A5 63m sellado. Expandir la espiral en 2 frentes antes de abrir A5: (a) 1 frente ortogonal de 20 años (calendario/carry FX Dukascopy EURUSD/USDJPY/WTI o commodities/bonos) para acercar K27@0,7x a 0,80 sobre el pool nuevo; (b) Binance daily/metrics (OI + Top-Trader L/S) para N en cripto.
   - Evidencia: `docs/research/macro_cta_vrp_20261127/RESULTADO.md`, `docs/research/macro_cta_vrp_20261127/RESULTADO.json`, `docs/research/espiral_sintesis_20261127/RESUMEN.md`
+- **Corrección K61 de volatilidad implícita local (^AXVI, ^VXD, ^RVX, ^GVZ) vs ^VIX exógeno de EE. UU. en C2_VBB, C2_VZ_1F y C2_EVRP_1F (2006/2008 → 2026-09) + reconciliación canónica H3 (#7)** (`F-CARRIL2-VOL-LOCAL-K61`, 2026-11-27, sesion)
+  - Efecto: Al corregir a IV local verificada, C2_VBB sube de Sh=-0,075 (t=-0,26) a Sh=+0,427 (t=1,73, diff vs N=+0,589 t=2,32) y C2_EVRP_1F a Sh=+0,614 (t=2,80, diff=+0,584 t=2,49); C2_VZ_1F queda en Sh=+0,357 (diff=+0,045). Destapa que ASX200+VIX_EEUU en confianza_sin_forward tenía look-ahead horario de 14h (cierre Sydney 02:00 NY vs CBOE 16:15 NY), inflando C2_VZ en ASX200 a t=12,11 frente a t=0,71 con ^AXVI simultáneo. Además #7 fija SERIE_CANONICA_CARRIL2 sin censura en bordes: DESC=1,068, REP=1,256, HOLDOUT=1,057, todo 249m=1,098 (t=5,00).
+  - Dónde: ASX200/^AXVI, Dow/^VXD, Russell2000/^RVX, GC/^GVZ (2006–2026-09) y canasta canónica Carril 2 (16 pares)
+  - Siguiente: Aplicar regla estricta de cierre simultáneo al transferir indicadores diarios entre husos horarios (Sydney/Tokio vs NY/CBOE). Usar SERIE_CANONICA_CARRIL2.csv.gz como referencia única de Carril 2.
+  - Evidencia: `docs/research/carril2_vol_local_20261127/RESULTADO.md`, `docs/research/carril2_vol_local_20261127/RESULTADO.json`, `docs/research/canasta_amplia_20261127/SERIE_CANONICA_H3.md`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -535,7 +540,7 @@ _Extraído por el meta-analista de una campaña cerrada; falta revisión._
   - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
   - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
 
-## EN_SEGUIMIENTO (27)
+## EN_SEGUIMIENTO (30)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -584,6 +589,21 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: Perpetuos USDT-M de Binance, universo PIT top-25 (2020-05 → 2020-10 activos)
   - Siguiente: Priorizar CR3_XSMOM_21d + CRIPTO_OFI en Binance y vigilar BAB_LowVol antes de darle peso pleno en vivo.
   - Evidencia: `docs/research/cripto_v3_2019_20261127/RESULTADO.md`, `docs/research/cripto_v3_2019_20261127/RESULTADO.json`, `docs/research/confianza_sin_forward_20261127/DSR_HAIRCUT.json`
+- **Reloj horario FX K58 (EURUSD/USDJPY Dukascopy), oro Asia/Londres vs COMEX NY, rebalanceo Treasury fin de mes (TLT/IEF) y XS-Momentum 12 ETFs non-equity (2006-01→2026-09, DESC+REP 186m, HOLDOUT 63m sellado)** (`F-FX-MACRO-FIX-20Y`, 2026-11-27, sesion)
+  - Efecto: K58 superado minuto a minuto tras corregir Dukascopy=-7h→America/New_York (invierno corr=0,9255, gap DST US-UE mar corr=0,9863, verano corr=0,8548, desfase=0). FXF1 reloj FX pierde neto (DR Sh=-0,938 t=-3,69, 1002x/año); FXF4 XS-Mom non-equity cae en REP (-1,112, DR=-0,001); FXF2 oro ovn-shortRTH da DR=+0,306 (la pierna overnight larga da +1,281 t=5,04, pero el short COMEX RTH +0,068 y doble fricción 501x/año matan el neto a 2x=-0,409); FXF_Canasta_InvVol cae en REP (-0,737, DR=0,265). Sobrevive estable FXF3_Treasury_MonthEnd_Rebal (DESC=0,427, REP=0,254, DR=0,394 t=1,55, corrMVC=-0,023, corrMRV3=-0,141, corrSPY=+0,014): sumada al pool sellado (MVC+MRV+FXF3, 63m HO sellados) eleva K27 1,0x a 0,783 (40/40/20: 0,791) y N_eff 5F a 4,62/5,00.
+  - Dónde: EURUSD/USDJPY/XAUUSD M1 Dukascopy + 12 ETFs non-equity 2006-01 → 2026-09 (186m DESC+REP)
+  - Siguiente: No repetir rotación intradía FX Breedon-Ranaldo (FXF1) ni shorts COMEX diarios por fricción (500–1000x/año). Conservar FXF3_Treasury_MonthEnd_Rebal como pata ortogonal candidata de baja rotación (24,2x/año) y mantener HOLDOUT A5 sellado.
+  - Evidencia: `docs/research/fx_macro_fix_20261127/RESULTADO.md`, `docs/research/fx_macro_fix_20261127/RESULTADO.json`, `docs/research/espiral_fase2_sintesis_20261127/RESUMEN.md`
+- **Transferencia congelada de Carril 2 (9 reglas de tools/carril2.py) a E-mini S&P MidCap 400 (EMD, M1 NT8, 2006–2026-09) contra control N exacto (K33 costo estimado declarado)** (`F-CARRIL2-EMD-VIRGEN`, 2026-11-27, sesion)
+  - Efecto: En la muestra completa virgen (249m), nucleo_5 (IBS,D7,TT,TOM,VBB) da Sh=0,611 (t=2,78) vs control N Sh=0,095 (diff +0,443, t=2,02, p=0,0218). Pero en el criterio de refutación post-2009 (213m) el exceso cae a NO_CONCLUYENTE (Sh=+0,220, t=0,93; todas_9 2009+ diff Sh=+0,097, t=0,41; 2019+ -0,217). En HOLDOUT (63m): nucleo_5 +0,364 (diff +0,169 t=0,39). Valida el mecanismo en un índice que nunca se usó y confirma la calibración conservadora de tamaño en vivo de Carril 2 (0,4–0,6).
+  - Dónde: EMD M1 NT8 (2006-01 → 2026-09), fricción estimada K33 base 0,4378 pts
+  - Siguiente: Usar como evidencia confirmatoria de mecanismo global (~0,4–0,5 Sh neto esperado, inferior en post-2009) sin sobreponderar Carril 2 en sizing en vivo.
+  - Evidencia: `docs/research/carril2_emd_20261127/RESULTADO.md`, `docs/research/carril2_emd_20261127/RESULTADO.json`
+- **Reglas congeladas CR3_XSMOM_21d_Stag5d y CR3_XSMOM_BetaNeut_Stag5d en Binance Spot USDT PIT (2017-10 → 2019-08, 64 pares cargados, 20 pb RT, 0 funding, muestra primaria K60 completa)** (`F-CRIPTO-XSMOM-SPOT-2017-2019`, 2026-11-27, sesion)
+  - Efecto: En los 23 meses pre-registrados (sin excluir ceros de 2017-10..2018-06 con n<10 por regla K60): XSMOM_21d Sh=0,44 (t=0,61, p=0,2698; ex-2017 20m Sh=0,47 t=0,61; pierna corta +0,34 vs larga -0,06); BetaNeut Sh=0,45 (t=0,62; ex-2017 Sh=0,48). Sensibilidad live30+n>=6 consistente en signo positivo; alta volatilidad en Q2-2019 (-2.557 USD mayo–ago). Veredicto honesto: NO_CONCLUYENTE por potencia insuficiente (t=0,61), aunque consistente en signo positivo ex-2017.
+  - Dónde: Binance Vision Spot USDT 1d PIT (2017-08 → 2019-08, 64 pares)
+  - Siguiente: No sobrevender como confirmación estadística (t=0,61); la única vía pendiente en cripto para ampliar muestra ortogonal sigue siendo Binance futures daily/metrics (OI y Top-Trader L/S) y forward en CR3_XSMOM + OFI.
+  - Evidencia: `docs/research/cripto_xsmom_spot_2017_2019_20261127/RESULTADO.md`, `docs/research/cripto_xsmom_spot_2017_2019_20261127/RESULTADO.json`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
