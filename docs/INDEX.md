@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md` (2026-11-20)
+`docs/research/HANDOFF_ANTIGRAVITY_2026-11-27.md` (2026-11-27)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -12,7 +12,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 113 |
+| `docs` | 118 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
@@ -25,13 +25,13 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/foundation` | 2 |
 | `docs/incidents` | 18 |
 | `docs/indicadores` | 1 |
-| `docs/infra` | 26 |
+| `docs/infra` | 27 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1526 |
+| `docs/research` | 1672 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,7 +40,9 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| HANDOFF | 21 | `HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md` | 2026-11-20 | VIGENTE — punto de entrada de esta etapa, escrito para seguir sin la conversació |
+| PLAN | 14 | `PLAN_ESPIRAL_20261127.md` | 2026-11-27 | PLAN — propuesta para que Nico elija. No se corrió nada nuevo; cada punto necesi |
+| HANDOFF | 23 | `HANDOFF_ANTIGRAVITY_2026-11-27.md` | 2026-11-27 | VIGENTE — índice del trabajo de Antigravity del 2026-11-27; la revisión de Claud |
+| ESTADO | 4 | `ESTADO_DEL_EDGE_20261127.md` | 2026-11-27 | VIGENTE — diagnóstico descriptivo sobre datos de desarrollo ya mirados (2021-02  |
 | REVISION | 10 | `REVISION_DESCARTADAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas. No abre holdout ni  |
 | REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
 | RE | 1 | `RE_INDAGACION_PISTAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas en DESC (no abre REP |
@@ -77,13 +79,11 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
-| ESTADO | 3 | `ESTADO_IDEA_ENTRENAMIENTO_IA_20261015.md` | 2026-10-15 | VIGENTE (se actualiza al cierre de cada hito) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | ADENDA | 1 | `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA OK DE NICO. NO EJECUTAR. Es una búsqueda sobre retornos: aplica el |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
 | R2 | 2 | `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (descriptivo, target-free; release v4 aprobada, purpose=provisional_ |
-| PLAN | 13 | `PLAN_HACIA_EDGE_NETO_20261014.md` | 2026-10-14 | PROPUESTA |
 | INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md) |
 | GC | 1 | `GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md` | 2026-10-14 | fase RTH (08:30–15:00 CT) / OTHER, y dirección del flujo previo (±1). Celdas fas |
 | AVZP2 | 10 | `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL. Todo lo de esta acta se calculó sobre la release liquid_tick_v1 v3, |
@@ -101,15 +101,17 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
 
-## Superados (7)
+## Superados (9)
 
 - `AUDITOR_START_HERE.md` — SUPERADO parcialmente por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACIO
 - `docs/BRANCH_REGISTRY_2026-08-24.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
 - `docs/BRANCH_REGISTRY_2026-09-02.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
+- `docs/HANDOFF_AUDITOR_20261123_FUNDEDSYNC.md` — HISTÓRICO (superado por docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md)
 - `docs/infra/MANANA_PENDIENTES_20261014.md` — SUPERADO por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md
 - `docs/research/EDGELAB_VIEWER_UNIFICATION_PLAN_20260920.md` — SUPERADO
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
+- `docs/research/cartera_lucid_20261125/RESULTADO.md` — RESULTADO (descriptivo de cuenta, plan PLAN.md con enmienda 1; no suma pruebas).
 
 ## Documentos nuevos sin `Estado:` (0)
 

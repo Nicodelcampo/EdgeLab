@@ -199,6 +199,63 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
 - **K53, definición que nunca dispara en datos reales (2026-11-19, FLUJOS-MACRO FM6).** La sesión CME arranca 18:00 del día previo; un umbral de minuto sin tope superior (`mo >= 495`) tomó la vela de las 18:00 y la caja de la mañana quedó vacía: FM6/FM6N con 0 disparos en 8 meses. El test sintético pasaba porque sus sesiones no cruzan la medianoche. **Guarda:** `a5_campana.calibracion` frena (SystemExit K53) si una definición o control no tiene disparos en la calibración; `test_fm6_dispara_con_sesiones_reales_que_cruzan_medianoche` con M1 real. Las tablas calculadas con el código viejo se descartan (K41).
 - **K54, insumo externo ausente en un entorno (2026-11-19, FLUJOS-MACRO FM7).** El módulo busca `cboe_volatility_daily.parquet` y, si no lo encuentra, usa un respaldo (RV5, ATR/cierre). El kernel de ticks de Kaggle no tenía el dataset M1NT8: la tabla de ticks salió con `vix_prev` vacío y la de M1 con VIX real, y la calibración comparó dos reglas distintas (FM7: 42/209 sesiones comunes; FM1 con otro stop). Ningún veredicto cambia (FM1/FM2 tenían neto negativo, FM7 no calibraba), pero la calibración de FLUJOS-MACRO y OPTION-ALPHA no vale para las reglas que usan VIX. **Guardas:** `a5_campana.insumos_distintos` (columna de contexto presente en M1 y ausente en ticks → SystemExit) y `tablas.insumos_externos` (adjunta el dataset M1NT8 a los kernels de módulos que lean CBOE o el calendario). Test: `tests/test_gobernanza_20261118.py::test_k54_ticks_sin_insumo_externo_no_calibran`. Regla: un respaldo silencioso es un cambio de regla; el respaldo sólo vale en tests sintéticos.
 - **K55/K56, grillas leídas sin mecanismo y épocas leídas sin episodios (2026-11-19).** La «variante rápida» de Z (cubeta 10/EMA 10) que recomendé tenía 4 operaciones en 18 años (las perillas cortas hacen el filtro casi imposible); A20 tiene 1,2 variantes efectivas entre 81 (sus «81/81 positivas» no valen como meseta); el «apagado» de la reversión corta lo explicaban 3 meses de crisis. Regla: antes de leer una grilla, operaciones por celda y número efectivo de variantes; antes de declarar una regla apagada, descomposición por meses. Lo encontró la pregunta de Nico, no un gate: `docs/research/MIRADA_HUMANA_20261119.md`.
+- **K57, límite diario de prop aplicado al cierre (2026-11-27).**
+  - Qué pasó: `cartera_lucid._sim_cuenta` y `lucid_canastas._sim` cortaban el día en −DLL sólo si el **cierre** era peor. Lucid liquida
+    cuando el P&L del día toca el DLL **durante** el día.
+  - Efecto: la ventaja por mes de los planes grandes de la 150K estaba inflada 35–40 % (4 micros: +$330 → +$213), y la 25K y la 50K
+    parecían tener planes sensatos.
+  - Regla: todo simulador de cuenta prop con DLL usa el mínimo intradía del día (`tools/intradia_min_cartera.py`, parámetro `xmin` de
+    `_sim_cuenta`).
+  - Guarda en código: `tests/research/test_cartera_lucid_calibracion.py::test_sim_cuenta_dll_sobre_minimo_intradia`.
+  - Lo encontró la revisión pedida por Nico («quizás fuiste demasiado estricto»), al contrastar los dos simuladores.
+
+- **K58, hora de una fuente externa distinta de la documentada (2026-11-27, TRZ-EXTRANJEROS).**
+  - Qué pasó: HistData documenta «EST fijo», pero su sello es la hora de Nueva York con horario de verano y marca la apertura de la
+    vela. La compuerta de calibración falló en T, R y Z hasta que una correlación minuto a minuto contra NQ futuros mostró 1 h de
+    desfase en verano.
+  - Regla: toda fuente intradía nueva se alinea contra una referencia del mismo subyacente, en invierno y en verano, antes de medir.
+  - Guarda en código: `edgelab/research/alineacion_horaria.py::exigir_alineada` (`tests/research/test_alineacion_horaria.py`).
+- **K59, costo en la escala de otro instrumento o de otra época (2026-11-27, TRZ-EXTRANJEROS; lo encontró Antigravity).**
+  - Qué pasó: la fricción de NQ en puntos (1,5455) se restó a índices europeos llevados a la escala de NQ de cada día. En 2010–2019
+    (NQ 2.200–4.500) eso son 5–7 pb por viaje, contra ≈ 1 pb de un futuro europeo, y la t de −4,57 exageraba la caída (−1,37 con
+    costo proporcional). El veredicto no cambió: el bruto en 2020–2026 es ≈ 0.
+  - Regla: un costo trasladado a otro instrumento o a una escala transformada se expresa en pb del instrumento de destino y se publica
+    con su sensibilidad (fijo y proporcional). Es un costo estimado y declarado (K34).
+  - Guarda: guía (`LEER_ANTES_DE_CADA_CORRIDA.md` §8).
+- **K60, cambiar la muestra después de ver el resultado (2026-11-27, CRIPTO-V3-2019; addendum de Antigravity).**
+  - Qué pasó: la primaria pre-registrada (9 meses, t 1,64) se recalculó sin los 3 meses en cero (sin universo) y pasó a t 1,73,
+    rotulada CONFIRMA, sobre 6 meses.
+  - Regla: el veredicto sale de la muestra pre-registrada. Una exclusión decidida después es una sensibilidad: se publica y no cambia
+    el veredicto. Un mes sin posición es un retorno 0, no un dato faltante.
+  - Guarda: revisión cruzada entre agentes (la revirtió la revisión de Claude) y guía §8.
+- **K61, variable exógena de otro mercado en una prueba de transferencia (2026-11-27, CONFIANZA-SIN-FORWARD H1).**
+  - Qué pasó: VBB usaba el VIX de EE. UU. para decidir en DAX, Nikkei o ASX; dio negativo afuera y bajó la canasta.
+  - Regla: al transferir una regla a otro mercado, cada insumo exógeno se reemplaza por su equivalente local (VSTOXX, VHSI…) o la regla
+    se excluye. Se decide antes de mirar y se declara en el pre-registro.
+  - Guarda: guía §8.
+- **K62, recomendar una fuente de datos sin verificar que cubre el símbolo y la temporalidad (2026-11-27, bonos AR).**
+  - Qué pasó: recomendé pagar TradingView Premium para exportar intradía de bonos de BYMA. Antigravity lo verificó en el gráfico: para
+    bonos de BCBA todas las temporalidades intradía están deshabilitadas.
+  - Regla: antes de recomendar una compra, se verifica el símbolo exacto y la temporalidad (prueba gratis, captura o muestra). Si no
+    se pudo verificar, se dice explícitamente.
+  - Guarda: guía §8.
+- **K63, `registro_global.py` sin argumentos consolidaba el registro (2026-11-27).**
+  - Qué pasó: corrí la herramienta sin argumentos pensando en `preregistrado` y reescribió `TRIAL_REGISTRY_GLOBAL.jsonl`; se restauró con
+    `git checkout`.
+  - Guarda en código: sin argumentos sólo muestra la ayuda; consolidar exige `consolidar` (`tests/test_guardas_20261127.py`).
+- **K64, ventana móvil que cruza meses sellados (2026-11-27, BONOS-RATIOS).**
+  - Qué pasó: la media y el desvío móviles del ratio, y la ventana futura del desenlace, tomaban días de meses HOLDOUT o EMBARGO
+    vecinos a un mes DESC/REP.
+  - Regla: toda ventana (pasada o futura) de una observación DESC/REP tiene que caer entera en meses DESC/REP; si no, la observación
+    se marca SELLADO.
+  - Guarda en código: la máscara `limpio` de `tools/bonos_ratios.py::_serie` y de `tools/bonos_rotacion.py::_exceso`. Patrón a copiar en
+    cualquier serie diaria con ventanas largas sobre A5.
+- **Prácticas del 27-nov (sin K):**
+  - Al tocar `FACTORES.jsonl`, regenerar `ESTADO_VIVO.md` en el mismo commit (`tools/contexto_vivo.py --write`); si no, la compuerta
+    de corridas y el CI quedan en rojo.
+  - Un insumo intermedio construido con código corregido después (CSV del arnés con la hora mal) se borra antes de relanzar (familia
+    de K41).
+  - pandas con `datetime64[us]`: para pasar a segundos usar `.dt.as_unit("s")`; `// 10**9` da valores errados.
 
 - **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
   nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.

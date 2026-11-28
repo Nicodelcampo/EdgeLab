@@ -4,7 +4,8 @@
 > versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
 > marcador `SHA256-BODY-ABOVE`: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
-> ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
+> ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Snapshot
+> vivo compacto de arranque (`<= 150` líneas): `docs/ESTADO_VIVO.md`. Punto
 > de entrada operativo vigente: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`;
 > producto, módulos y protocolo de documentación: `docs/PRODUCT.md`, `docs/MODULES.md`, `docs/DOCUMENTATION_PROTOCOL.md`.
 
@@ -36,12 +37,35 @@ Recordatorios:
   probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
   capital.
 
+## Producción y operación (2026-11-25)
+
+> **Entrada para bots, cuentas prop y payouts: `docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md`** (y su veredicto
+> `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`). La línea de producción
+> (`fix/fundedsync-il-parity`) se integró en `foundation` el 2026-11-25: no hay otra rama de trabajo. Ramas viejas
+> con trabajo fuera de `foundation`, archivadas con etiqueta `archivo/20261125/<rama>`: `docs/infra/INVENTARIO_RAMAS_20261125.md`.
+> Operar con dinero real sigue siendo decisión humana: el agente prepara, verifica y documenta; Nico activa.
+> Al arrancar una sesión de bots/cuentas: `python tools/estado_produccion.py --check` (estado de cuentas, desde
+> `config/cuentas_activas.json`), `python tools/deriva_bots.py --check` (repo vs NT8/MT5/cTrader instalados) y, antes de
+> habilitar un bot en una cuenta, `python tools/puerta_despliegue.py --cuenta <id>`.
+
 ## Estado vigente (2026-10-14)
 
 > **Entrada operativa: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`.** Producto y roadmap: `docs/PRODUCT.md`. Mapa de módulos (generado de `config/modules.json`, verificado por `tools/check_modules.py`): `docs/MODULES.md`. Dónde va cada documento y el encabezado `Estado:` obligatorio: `docs/DOCUMENTATION_PROTOCOL.md`. Índice: `docs/INDEX.md`.
 > **0 edges promovidos.** Release `liquid_tick_v1` v4 publicada, verificada y auditada, **no aprobada** para research. Fricción de ES ≈ 3,4–3,6 ticks por viaje (`docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md`).
 > **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
 > `main` **no** es baseline: se integró en `foundation` y se alineó con ella el 2026-10-14 (mismo commit). Ver `docs/DECISIONES_20261014.md`.
+
+### Estado al 2026-11-27
+
+> **Handoff auditable (sin depender del chat): `docs/research/HANDOFF_2026-11-27_CANASTA_EDGE_AUDITORIA.md`.**
+> - **Edge:** ventaja medible en T, R, V y Z de NQ; su confirmación es el forward (≈ 13–15 meses). El vendedor de FundedSync vende desde
+>   2026-09-01, así que 2020–2026 está dentro de su muestra.
+> - **Canasta:** el N diluye sólo con mecanismos distintos. Carril 2 replica como canasta (REP t 3,11) aunque ninguna regla sola lo
+>   hacía. La apertura de su HOLDOUT A5 sellado está pre-registrada y bloqueada por K27 (decisión de Nico).
+> - **Errores corregidos:** `ResolveTz` caía a UTC en mono; el simulador de cuentas aplicaba el DLL al cierre (K57).
+> - **Cripto y tendencia no-equity:** sin evidencia.
+> - **Cierre 28-nov:** errores K58–K64 con sus guardas (`LEER_ANTES_DE_CADA_CORRIDA.md` v5 §8), prácticas ATJ-28–31 y plan siguiente en
+>   `docs/research/PLAN_ESPIRAL_20261127.md` (handoff §15).
 
 ### Estado al 2026-11-20
 

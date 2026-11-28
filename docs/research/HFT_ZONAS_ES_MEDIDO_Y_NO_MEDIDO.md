@@ -1444,3 +1444,192 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - el tamaño reducido de A20;
   - la canasta en el forward;
   - la paridad NT8 de las estrategias nuevas.
+
+## 2026-11-20 — Curvas del vendedor de FundedSync
+- **MEDIDO:** los 15 módulos en NQ 2022–2026 y 2010–2021 (t mensual, bruto y neto). `docs/research/verif_vendedor_20261120/RESULTADO.md`.
+- **NO MEDIDO:** con qué unidades y costos grafica el vendedor.
+
+## 2026-11-21 — REMEDICION-FS-IL
+- **MEDIDO:** los 15 módulos con la traducción corregida; V pasa a t 2,87 desde 2022. `docs/research/remedicion_fs_il_20261121/RESULTADO.md`.
+- **NO MEDIDO:** la correlación de V con la canasta; A20-REGIMEN, FILTROS-CONTEXTO y CANASTA-CORRELACION con la A20 nueva.
+
+## 2026-11-26 — CARTERAS-LOCALES-CORRELACION
+- **MEDIDO:** correlación y curvas de INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2 y la canasta TRZQ, por bloque A5. `docs/research/carteras_locales_correlacion_20261126/RESULTADO.md`.
+- **NO MEDIDO:** el terminal de las carteras distintas de P_OPT_SF_v2.
+
+## 2026-11-26 — ESTABILIDAD-CARTERA
+- **MEDIDO:** caída may–sep 2026 por estrategia; 3 mitigaciones walk-forward; tamiz de ≈ 60 series por aporte de estabilidad. `docs/research/estabilidad_cartera_20261126/RESULTADO.md`.
+- **NO MEDIDO:**
+  - Carril 2 (salvo C2_VZ/EVRP) después de 2025-07;
+  - N y F por la cadena A5;
+  - forward de la cartera mixta.
+
+## 2026-11-26 — ADAPTAR-PRESENTE 1 y FS-NFCO-A5
+- **MEDIDO:**
+  - topes de T y F escalados por precio: no se adoptan;
+  - O confirma en REP de A5 y N queda NO_CONCLUYENTE;
+  - F y C sin nominar.
+- **NO MEDIDO:**
+  - la fracción en el tope de la variante de T (el kernel reporta el riesgo con el tope fijo);
+  - O con tamaño fijo;
+  - E con stop y objetivo en proporción.
+
+## 2026-11-26 — CARRIL2-EXTENSION
+- **MEDIDO:** 24 definiciones de Carril 2 hasta 2026-09 (DESC/REP). `docs/research/carril2_extension_20261126/RESULTADO.md`.
+- **NO MEDIDO:** el holdout A5 de CARRIL2_A5 (sin abrir).
+
+## 2026-11-26 — REGLA-CARTERA
+- **MEDIDO:** regla fija de suma decorrelacionada con validación fuera de tiempo (2023-07 → 2026-09). `docs/research/regla_cartera_20261126/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el forward;
+  - F, C, N y O dentro de EdgeLabCartera en NT8.
+
+## 2026-11-27 — AUDITORÍA DE CARTERA (Antigravity) y revisión de Claude
+- **MEDIDO (EF2, sin pre-registro, contado después: 169 pruebas):**
+  - auditoría de REGLA-CARTERA a igual volatilidad (la regla no supera a la actual);
+  - variantes FUNDEDSYNC con stop ATR, leyendo los meses HOLDOUT A5;
+  - 6 mecanismos en 15 mercados M1 + 8 M1DK (8/99 positivos en DESC y REP, ninguno con t ≥ 2 en REP);
+  - 5 reglas cripto en 8 perpetuos de Binance (3 positivas en DESC y REP);
+  - 7 asignadores en walk-forward;
+  - Monte Carlo de props (simuladores calibrados K28; reglas de retiro distintas a `cartera_lucid.py`).
+
+  Fuentes: `docs/research/auditoria_cartera_20261126/RESULTADO.md` y `REVISION_CLAUDE.md`.
+- **NO MEDIDO:**
+  - cripto con universo punto en el tiempo, deslizamiento y su HOLDOUT A5;
+  - tendencia diversificada no-equity como hipótesis única pre-registrada;
+  - paridad NT8 de N y SOMEOD;
+  - tamaño por cuenta con el simulador calibrado de LucidFlex;
+  - variantes FUNDEDSYNC en el terminal y el forward.
+
+## 2026-11-27 — PRESET-DIVERSIFICADA (NT8 + cuentas)
+- **MEDIDO:**
+  - paridad del arnés de la cartera de 10 (≥ 98,8 % emparejadas contra NT8; 0 descuadres), con la zona horaria corregida;
+  - tamaño por cuenta LucidFlex de 8 contra 10: la de 10 baja la P(cobrar) en 25K, 50K y 150K.
+
+  Fuente: `docs/research/preset_diversificada_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - N en el Strategy Analyzer de NT8;
+  - el precio de entrada de Franklin y ES5N en NT8 contra el arnés;
+  - la cartera de 10 en una cuenta personal.
+
+## 2026-11-27 — TENDENCIA-NO-EQUITY
+- **MEDIDO:** TSMOM mensual en 14 ETFs no-equity, DESC de A5 (t 0,96, SIN_EVIDENCIA, MDE Sharpe 0,76).
+  Fuente: `docs/research/tendencia_no_equity_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - la réplica (REP) y el HOLDOUT A5 (DESC no pasó);
+  - futuros reales con más mercados.
+
+## 2026-11-27 — CRIPTO-PIT
+- **MEDIDO:** 3 reglas cripto congeladas con universo top-25 punto en el tiempo (239 monedas, con dadas de baja) y 20 pb ida y vuelta.
+  El 1/N da DESC+REP t 1,21 y REP negativa: viva sin evidencia, no pasa al holdout.
+  Fuente: `docs/research/cripto_pit_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - HOLDOUT A5 de `CRIPTO_BINANCE` (sigue sellado);
+  - ejecución real (maker contra taker) y forward.
+
+## 2026-11-27 — Revisión «demasiado estricto» (pedida por Nico)
+- **MEDIDO:**
+  - planes de cuenta por ventaja por mes (`preset_diversificada_20261127/VENTAJA_POR_MES.csv`);
+  - persistencia del barrido de Kaggle (Fisher p 0,014);
+  - potencia del overnight del Russell (228 meses);
+  - diagnóstico cripto top-8 punto en el tiempo (`cripto_pit_20261127/RESULTADO_TOP8.md`).
+- **Corregido:**
+  - stops ATR de FundedSync (vienen de `fundedsync_prop_opt_20261122`, no del holdout);
+  - universo de `Regla_V2_Clean`;
+  - «al nivel del azar».
+- **NO MEDIDO:**
+  - el modelo de retiros de Lucid contra las reglas reales;
+  - `Regla_V2_Clean` con micros enteros en NT8.
+
+## 2026-11-27 — DLL intradía en el simulador de cuentas
+- **MEDIDO:** camino intradía minuto a minuto de las 10 estrategias de la cartera NT8; planes LucidFlex con el DLL sobre el mínimo
+  intradía. El tamaño grande se infla 35–40 % si el DLL se aplica al cierre; en la 150K, 2 micros es el punto robusto.
+  Fuente: `docs/research/preset_diversificada_20261127/RESULTADO.md` §6.
+- **NO MEDIDO:**
+  - deslizamiento creciente con el tamaño;
+  - el DLL de otras props (Tradeify y Topstep no tienen DLL; sus planes no se recalcularon).
+
+## 2026-11-27 — Segunda revisión «demasiado estricto»
+- **MEDIDO:** sensibilidad del DLL intradía con la cota optimista (cierre de cada vela) en la 150K (`SENSIBILIDAD_DLL_150K.csv`).
+- **Corregido:** la regla de cartera a igual riesgo baja la caída ≈ 35 % (números de la auditoría, `AUDITORIA_RESUMEN.json`).
+- **NO MEDIDO:** la versión operable de la regla (sin F/C, pesos acotados) en el simulador de cuentas con DLL intradía.
+
+## 2026-11-27 — CANASTA-AMPLIA (el N diluye)
+- **MEDIDO (EF2, registro posterior):**
+  - encogimiento DESC → REP/HOLDOUT en el pozo de 40 series (b 0,43 / 0,70);
+  - canasta por regla fija (DESC > 0);
+  - pozos sellados (Carril 2 replica como canasta: REP t 3,11; Kaggle y cripto no);
+  - la intradía ampliada con más de lo mismo empeora.
+
+  Fuente: `docs/research/canasta_amplia_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - HOLDOUT A5 de la canasta Carril 2 sellada (pre-registrado, bloqueado por K27);
+  - forward de Carril 2.
+
+## 2026-11-27 — CONFIANZA-SIN-FORWARD (Carril 2 fuera de mercado, fuera de período y contra placebo)
+- **MEDIDO:**
+  - **Transferencia:** Carril 2 (5 reglas) en 8 índices extranjeros 1990–2026: Sharpe 0,50, t 3,02. Afuera decae: 0,24 desde 2009
+    y 0,16 desde 2019.
+  - **Período anterior:** EE. UU. 1990–2005: Sharpe 1,01, t 4,05. Es la muestra de publicación de varias de estas reglas.
+  - **Placebo:** canasta sellada menos control N, Sharpe 0,46, t 2,07. En el HOLDOUT, regla 1,06 contra control 0,37.
+  - **Sharpe deflactado:** Carril 2 (DESC+REP) 0,90.
+
+  Fuente: `docs/research/confianza_sin_forward_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - cripto 2019-09 → 2020-12;
+  - T, R y Z en índices extranjeros con M1 de Dukascopy;
+  - TERMINAL y forward de Carril 2.
+
+## 2026-11-27 — BONOS-RATIOS (ratio GD/AL de bonos argentinos, diario)
+- **MEDIDO:**
+  - Reversión a la media de 20 ruedas con salto de una rueda: 4/4 pares en DESC; replica en GD35/AL35, GD41/AL41 y GD38/AE38, no en
+    GD30/AL30.
+  - Fuerte con cepo (2021–2023); sin significancia desde 2025-04. Desvío de 2 sd 0,8–1,7 % contra un costo de ≈ 0,36 %.
+
+  Fuente: `docs/research/bonos_ratios_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el intradía y el spread real, que hay que grabar hacia adelante;
+  - el P&L de cualquier regla;
+  - los meses HOLDOUT de A5.
+
+## 2026-11-27 — CRIPTO-V3-2019 (canasta v3 congelada antes de su muestra)
+- **MEDIDO:**
+  - Meses DESC+REP 2019-10 → 2020-12: +234 USD/mes, t 1,64 (NO_CONCLUYENTE, potencia ≈ 0,18).
+  - XSMOM t 2,27; BAB t −0,26.
+
+  Fuente: `docs/research/cripto_v3_2019_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - los meses HOLDOUT de 2019–2020, sellados porque la familia ya usó su apertura;
+  - el forward.
+
+## 2026-11-27 — TRZ-EXTRANJEROS (T, R y Z de la cartera en índices europeos)
+- **MEDIDO:**
+  - Calibración del circuito HistData → arnés con el Nasdaq CFD: T y R calibran; Z no.
+  - Canasta T+R en DAX, FTSE, CAC y EuroStoxx (2010–2026): t −4,57, EN_CONTRA.
+  - T bruto ≈ +0,03 R (≤ 0 sin cortes de datos); R bruto ≈ 0.
+
+  Fuente: `docs/research/trz_extranjeros_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - Z (no calibra con CFD);
+  - Nikkei y ASX (hora no confiable);
+  - futuros reales FDAX/FESX/Z/NKD.
+
+## 2026-11-27 — BONOS-ROTACION (técnica swing de la charla con comisión cero)
+- **MEDIDO:**
+  - Canasta EN_CONTRA (DESC t −8,1).
+  - El bruto es positivo en 3/4 pares, pero menor que el spread; GD30/AL30 da ≈ 0 bruto en REP.
+  - Condiciones de VetaFLAT relevadas: 0 % de aranceles, cupo de 175–400 %, bonos de aire de un día.
+
+  Fuente: `docs/research/bonos_rotacion_20261127/RESULTADO.md`.
+- **NO MEDIDO:** la versión intradía (velas de 5 s a 30 min). Falta intradía histórico, y el endpoint de Open BYMA Data no fue autorizado
+  desde el entorno.
+
+## 2026-11-27 — AL29/AL30: operaciones del amigo en Matriz (descriptivo, sin prueba contada)
+- **MEDIDO (descriptivo):**
+  - Reconstrucción: 2026-11-26, ratio 1,0389 → 1,0274 en 11 minutos, +47.500 $ sobre ≈ 4,3 M; toda la ganancia en la pata AL29.
+  - Liquidez: AL29 ≈ 120× menos volumen que AL30, spread 0,73 % contra 0,085 %, exceso de rango diario mediano 0,65 % desde la salida del cepo.
+  - Ratio al cierre: autocorrelación −0,16 y Roll 0,54 % desde la salida del cepo, probablemente por precios viejos de AL29.
+
+  Fuente: `docs/research/biblioteca_ideas_20261028/OPERACIONES_AMIGO_AL29_AL30_MATRIZ_20261127.md`.
+- **NO MEDIDO:** la regla intradía pasiva (límite en AL29 cubierta en AL30). Falta intradía: historial del amigo, API de Primary vía Veta
+  (cobertura de BYMA sin verificar) o grabación hacia adelante.

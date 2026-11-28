@@ -85,6 +85,7 @@ def directivas(root=None) -> str:
 # los agentes repetían errores ya documentados. Ahora cada rol recibe su núcleo completo; lo que se recorta es lo rotativo.
 # (clave, ruta, roles que lo reciben: "todos" = cualquier rol con `nucleo: true` en AGENTES.json; "diseño" = proponente y programador)
 NUCLEO_FUENTES = [
+    ("estado_vivo", "docs/ESTADO_VIVO.md", "todos"),
     ("directivas_de_nico", "config/autopilot/DIRECTIVAS.md", "todos"),
     ("factores_con_ventaja", "docs/research/FACTORES_CON_VENTAJA.md", "todos"),          # lo más valioso descubierto (si existe)
     ("errores_y_guardas", "docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md", "todos"),

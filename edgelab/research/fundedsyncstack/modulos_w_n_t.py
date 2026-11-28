@@ -148,7 +148,7 @@ class NDayConfig:
     regime_long_range_length: int = 20
     minimum_volatility_expansion_ratio: float = 1.25
     maximum_regime_efficiency: float = 0.25
-    flatten_before_daily_futures_close: bool = False
+    flatten_before_daily_futures_close: bool = True
     daily_futures_flatten_time_central: int = 154400
     daily_futures_resume_time_central: int = 170100
 
@@ -195,6 +195,9 @@ class FtmConfig:
     stop_orb_multiplier: float = 1.25
     stop_min_points: float = 2.0
     stop_max_points: float = 100.0
+    # EdgeLab (ADAPTAR-PRESENTE, 2026-11-26): si > 0, los topes en puntos se escalan por precio_actual / escala_precio_ref
+    # (precio actual = medio del rango de apertura, causal). 0 = comportamiento del vendedor.
+    escala_precio_ref: float = 0.0
     high_orb_target_r: float = 1.25
     high_orb_trigger_r: float = 1.25
     high_orb_lock_r: float = 0.0
@@ -851,6 +854,7 @@ def run_n(
         if int(boundaries[i]) >= cfg.flatten_time:
             working_stop_entry_price = None
             working_stop_entry_qty = 0
+            pending_market_entry_qty = 0
             if in_pos and pending_exit_reason is None:
                 pending_exit_reason = "EOD"
             continue
@@ -1492,7 +1496,8 @@ def run_t(
         side: int, parent_fill_open: float, prior_trend_avail: bool, prior_trend_bps: float
     ) -> _ShadowTradeState:
         entry_px = parent_fill_open + float(side) * float(cfg.shadow_slippage_ticks) * tick_size
-        raw_dist = max(cfg.stop_min_points, min(cfg.stop_max_points, (orb_high - orb_low) * cfg.stop_orb_multiplier))
+        _esc = (0.5 * (orb_high + orb_low) / cfg.escala_precio_ref) if cfg.escala_precio_ref > 0.0 else 1.0
+        raw_dist = max(cfg.stop_min_points * _esc, min(cfg.stop_max_points * _esc, (orb_high - orb_low) * cfg.stop_orb_multiplier))
         stop_px = contracts.round_tick(entry_px - float(side) * raw_dist, tick_size)
         risk_pts = float(side) * (entry_px - stop_px)
         t_r, trig_r, lock_r, _ = _ftm_select_management_plan(
@@ -1575,7 +1580,8 @@ def run_t(
         if in_pos or pending_submit is not None:
             return
         is_long = side == 1
-        raw_dist = max(cfg.stop_min_points, min(cfg.stop_max_points, (orb_high - orb_low) * cfg.stop_orb_multiplier))
+        _esc = (0.5 * (orb_high + orb_low) / cfg.escala_precio_ref) if cfg.escala_precio_ref > 0.0 else 1.0
+        raw_dist = max(cfg.stop_min_points * _esc, min(cfg.stop_max_points * _esc, (orb_high - orb_low) * cfg.stop_orb_multiplier))
         stop_ticks = _ftm_round_price_offset_ticks(raw_dist, is_long, tick_size)
         target_r, trig_r, lock_r, _ = _ftm_select_management_plan(
             side=side,
@@ -1993,9 +1999,12 @@ def run_t(
 
         o_min_et = int(open_min_et[i])
         c_min_et = int(close_min_et[i])
-        in_cash_win = (
+        same_et_date = (
             int(open_date_et[i]) == current_cash_date
             and int(close_date_et[i]) == current_cash_date
+        )
+        in_cash_win = (
+            same_et_date
             and o_min_et >= cfg.orb_start_minute_et
             and c_min_et <= cfg.cash_close_minute_et
         )
@@ -2023,7 +2032,7 @@ def run_t(
                 current_rth_vol_sum += vol_i
 
         # ProcessShadowPair
-        if in_cash_win and active_shadow_pair is not None:
+        if same_et_date and active_shadow_pair is not None:
             sp = active_shadow_pair
             if not sp.invalid and not sp.label_recorded:
                 if not sp.initialized:
@@ -2045,7 +2054,7 @@ def run_t(
                     try_record_completed_model_label()
 
         # ProcessPendingEntryDecision
-        if in_cash_win and pending_entry_decision is not None and not day_blocked:
+        if same_et_date and pending_entry_decision is not None and not day_blocked:
             ped = pending_entry_decision
             if bar_open_ns >= ped.expected_obs_open_utc_ns:
                 if bar_open_ns != ped.expected_obs_open_utc_ns or (bar_close_ns - bar_open_ns) != _NS_PER_MIN:
@@ -2081,7 +2090,7 @@ def run_t(
                         )
 
         # ProcessPendingFinalEntryDecision
-        if in_cash_win and pending_final_entry_decision is not None and not day_blocked:
+        if same_et_date and pending_final_entry_decision is not None and not day_blocked:
             pfed = pending_final_entry_decision
             if bar_open_ns >= pfed.expected_obs_open_utc_ns:
                 if bar_open_ns != pfed.expected_obs_open_utc_ns or (bar_close_ns - bar_open_ns) != _NS_PER_MIN:
@@ -2111,7 +2120,7 @@ def run_t(
                             submit_entry(final_side, d_src, r_path)
 
         # CashClose1600ET
-        if in_cash_win and c_min_et >= cfg.cash_close_minute_et:
+        if same_et_date and c_min_et >= cfg.cash_close_minute_et:
             cl_i = float(closes[i])
             if active_shadow_pair is not None:
                 sp = active_shadow_pair

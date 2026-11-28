@@ -55,13 +55,26 @@ namespace EdgeLabHarness
             { Rejects++; Working.Remove(o); if (!string.IsNullOrEmpty(o.Oco)) OcoUsados.Add(o.Oco); book.OnTerminal(tag, true); return; }
             o.Qty = qty; o.Price = price;
         }
+        // OcoCascada (2026-11-26, como NT8): cancelar una orden de un grupo OCO cancela tambien las demas del grupo.
+        //   0 = sin cascada (comportamiento anterior del arnes); 1 = cascada con aviso de cada cancelacion;
+        //   2 = cascada sin aviso para la hermana (la orden queda terminal pero el libro no recibe el evento).
+        public int OcoCascada = int.Parse(Environment.GetEnvironmentVariable("HARNESS_OCO") ?? "0");
+        public readonly Dictionary<string, string> Estado = new Dictionary<string, string>();
         public void Cancel(CarteraBook book, string tag)
         {
             Cans++; var o = Working.FirstOrDefault(x => x.Tag == tag);
             if (o == null) return;
-            Working.Remove(o);
+            Working.Remove(o); Estado[tag] = "CANCELADA";
             if (!string.IsNullOrEmpty(o.Oco)) OcoUsados.Add(o.Oco);
+            var hermanas = OcoCascada > 0 && !string.IsNullOrEmpty(o.Oco) ? Working.Where(x => x.Oco == o.Oco).ToList() : new List<SimOrder>();
+            foreach (var s in hermanas) { Working.Remove(s); Estado[s.Tag] = "CANCELADA"; }
             o.Book.OnTerminal(tag, false);
+            if (OcoCascada == 1) foreach (var s in hermanas) s.Book.OnTerminal(s.Tag, false);
+        }
+        public CarteraOrderStatus Status(string tag)
+        {
+            if (Working.Any(x => x.Tag == tag)) return CarteraOrderStatus.Live;
+            string e; return Estado.TryGetValue(tag, out e) ? (e == "LLENADA" ? CarteraOrderStatus.Filled : CarteraOrderStatus.Dead) : CarteraOrderStatus.Unknown;
         }
         public void Log(string msg) { Console.Error.WriteLine(msg); }
 
@@ -91,12 +104,12 @@ namespace EdgeLabHarness
                         else { fill = b.H >= o.Price; px = Math.Max(b.O, o.Price); }
                     }
                     if (!fill) continue;
-                    Working.Remove(o); Fills++;
+                    Working.Remove(o); Fills++; Estado[o.Tag] = "LLENADA";
                     { int n0; Net.TryGetValue(o.Book, out n0); Net[o.Book] = n0 + o.Side * o.Qty; }
                     { var k2 = o.Tag.Substring(0, o.Tag.LastIndexOf('|')); int c2; FillsPor.TryGetValue(k2, out c2); FillsPor[k2] = c2 + 1; }
                     if (!string.IsNullOrEmpty(o.Oco)) OcoUsados.Add(o.Oco);
                     if (!string.IsNullOrEmpty(o.Oco))
-                        foreach (var s in Working.Where(x => x.Oco == o.Oco).ToList()) { Working.Remove(s); s.Book.OnTerminal(s.Tag, false); }
+                        foreach (var s in Working.Where(x => x.Oco == o.Oco).ToList()) { Working.Remove(s); Estado[s.Tag] = "CANCELADA"; s.Book.OnTerminal(s.Tag, false); }
                     o.Book.OnFilled(o.Tag, px, o.Qty, cNy);
                     any = true;
                     break;   // la lista cambio (nuevas ordenes o cancelaciones): se vuelve a recorrer

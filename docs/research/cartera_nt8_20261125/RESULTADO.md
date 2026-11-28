@@ -99,3 +99,27 @@ comparar el CSV `Documents\NinjaTrader 8\EdgeLab\cartera\<preset>_<raiz>.csv` co
   (stop/objetivo) y en qué estrategia; con eso se corrige la causa (probablemente la cancelación automática del OCO en NT8 o el orden de
   sus eventos) y se compara el CSV `Documents\NinjaTrader 8\EdgeLab\cartera\Intradia_*.csv` con el arnés (`tools/nt8_cartera_paridad.py`).
 - La investigación (secciones 1–6) no depende de esto: usa el motor en el arnés, verificado contra las corridas NT8 individuales.
+
+## 8. Causa raíz de «RQ5, T y Z no operan en NT8» (2026-11-26) — corregida
+- **Causa:** al pedir una salida (fin del día, señal propia, fin de sesión), el libro cancelaba el stop y el objetivo del grupo OCO y esperaba
+  el aviso de cancelación de **los dos** antes de mandar la salida a mercado. En NT8, cancelar una pata de un OCO cancela también la otra,
+  y ese aviso de la hermana puede no llegarle al libro. El objetivo quedaba «vivo» en el libro y la estrategia, abierta para siempre:
+  no volvía a operar. Por eso fallaban justo las que tienen objetivo (RQ5, T, Z) y no Franklin, R ni ES5N (sólo stop).
+- **Reproducción:** el arnés ahora emula la cascada OCO de NT8 (`HARNESS_OCO=2`, cascada sin aviso para la hermana). Sin vigilante y con el
+  libro viejo, 2024-09 → 2025-06: NQ RQ5 0, ES RQ5 0, T 2, Z 0; Franklin 23, R 6 y ES5N 3 intactas. Es la misma firma de la corrida de Nico
+  (RQ5 0, T 3, Z 7).
+- **Corrección** (`EdgeLabCarteraBook.cs`, `EdgeLabCartera.cs`):
+  - el gateway expone `Status(tag)`, el estado real de la orden en NT8 (`Order.OrderState`);
+  - al salir (y al rearmar un OCO muerto), el libro suelta las órdenes que el broker ya canceló o rechazó, sin esperar su aviso;
+  - una orden llenada no se suelta: su aviso de fill cierra la posición, así no hay sobrellenado.
+- **Verificación en el arnés:**
+  - con cascada OCO 0, 1 y 2, con y sin vigilante, las operaciones son iguales a la simulación virtual (NQ RQ5 128, ES RQ5 131, T 76,
+    Z 17, Franklin 23, R 6, ES5N 3);
+  - 0 destrabes y 0 descuadres;
+  - el precio de salida difiere ≤ 0,16 pts (redondeo a tick).
+- **Segunda causa, sólo para V (no es un error de órdenes):** `VaultBreakEngine` necesita 252 sesiones RTH para su ATR diario. En una
+  corrida del Strategy Analyzer que empieza en 2025-01 sin historia previa, V no opera su primer año (221 contra 390). Para comparar,
+  cargar datos desde 2024-01 o antes.
+- **Sigue pendiente:** volver a correr en el Strategy Analyzer de NT8 (Intradía, con datos desde 2024) y comparar contra el arnés. El arnés no
+  prueba la semántica exacta de NT8; la corrección se basa en el estado real de la orden y debería cubrir tanto el aviso que no llega como
+  el que llega tarde.

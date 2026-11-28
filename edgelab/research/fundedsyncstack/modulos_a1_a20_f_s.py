@@ -95,6 +95,9 @@ class _AbsorbBaseConfig:
     bars_required_to_trade: int = 60
     virtual_round_turn_commission: float = 4.36
     timezone: str = "ct"
+    flatten_before_daily_futures_close: bool = True
+    daily_futures_flatten_time_central: int = 154400
+    daily_futures_resume_time_central: int = 170100
 
 
 @dataclass
@@ -143,6 +146,7 @@ class FabioConfig:
     disable_delta_filter: bool = False
     max_initial_risk_atr: float = 0.0
     max_initial_risk_points: float = 125.0
+    escala_precio_ref: float = 0.0   # EdgeLab (ADAPTAR-PRESENTE): > 0 escala el tope en puntos por entry_ref / ref; 0 = vendedor
     loss_cooldown_bars: int = 0
     atr_period: int = 14
     virtual_round_turn_commission: float = 4.36
@@ -188,6 +192,25 @@ class SwasConfig:
     bars_required_to_trade: int = 60
     virtual_round_turn_commission: float = 4.36
     timezone: str = "ct"
+    flatten_before_daily_futures_close: bool = True
+    daily_futures_flatten_time_central: int = 154400
+    daily_futures_resume_time_central: int = 170100
+
+
+def _is_daily_futures_close_blocked(
+    t_ct: int,
+    dow_ct: int,
+    flatten_time: int,
+    resume_time: int,
+) -> bool:
+    """Exact translation of IsDailyFuturesCloseBlocked (15:44-17:01 CT Mon-Thu, Fri 15:44 -> Sun 17:01 CT)."""
+    if dow_ct == 5:  # Sabado
+        return True
+    if dow_ct == 6:  # Domingo
+        return t_ct < resume_time
+    if dow_ct == 4:  # Viernes
+        return t_ct >= flatten_time
+    return flatten_time <= t_ct < resume_time
 
 
 # ---------------------------------------------------------------------------
@@ -946,13 +969,26 @@ def _run_absorb(
         )
 
         pos = tracker.pos
-        if cfg.exit_on_st_flip and pos == _POS_LONG and st_flip_down:
+        daily_close_blocked = (
+            _is_daily_futures_close_blocked(
+                int(ms.bip1.hhmmss_ct[e_j]),
+                int(ms.bip1.dow_ct[e_j]),
+                cfg.daily_futures_flatten_time_central,
+                cfg.daily_futures_resume_time_central,
+            )
+            if cfg.flatten_before_daily_futures_close
+            else False
+        )
+        if daily_close_blocked and pos != _POS_FLAT:
+            tracker.request_exit("DAILY_FUTURES_CLOSE", e_j)
+        elif cfg.exit_on_st_flip and pos == _POS_LONG and st_flip_down:
             tracker.request_exit("ST", e_j)
         elif cfg.exit_on_st_flip and pos == _POS_SHORT and st_flip_up:
             tracker.request_exit("ST", e_j)
 
         if (
-            cfg.allow_longs
+            (not daily_close_blocked)
+            and cfg.allow_longs
             and long_sig
             and env_ok
             and daily_loss_ok
@@ -965,7 +1001,8 @@ def _run_absorb(
             sl = (cl_j - cfg.hard_stop_atr_mult * cur_atr) if cfg.use_hard_stop else math.nan
             tracker.request_entry(+1, qty, sl, math.nan, e_j)
         elif (
-            cfg.allow_shorts
+            (not daily_close_blocked)
+            and cfg.allow_shorts
             and short_sig
             and env_ok
             and daily_loss_ok
@@ -1152,7 +1189,8 @@ def run_f(
                     atr_risk_ok = True
 
                 if cfg.max_initial_risk_points > 0.0:
-                    pts_risk_ok = risk <= cfg.max_initial_risk_points
+                    _esc = (entry_ref / cfg.escala_precio_ref) if cfg.escala_precio_ref > 0.0 else 1.0
+                    pts_risk_ok = risk <= cfg.max_initial_risk_points * _esc
                 else:
                     pts_risk_ok = True
 
@@ -1321,7 +1359,19 @@ def run_s(
             slope_short = True
 
         pos = tracker.pos
-        if cfg.exit_on_st_flip and pos == _POS_LONG and st_flip_down:
+        daily_close_blocked = (
+            _is_daily_futures_close_blocked(
+                int(ms.bip1.hhmmss_ct[e_j]),
+                int(ms.bip1.dow_ct[e_j]),
+                cfg.daily_futures_flatten_time_central,
+                cfg.daily_futures_resume_time_central,
+            )
+            if cfg.flatten_before_daily_futures_close
+            else False
+        )
+        if daily_close_blocked and pos != _POS_FLAT:
+            tracker.request_exit("DAILY_FUTURES_CLOSE", e_j)
+        elif cfg.exit_on_st_flip and pos == _POS_LONG and st_flip_down:
             tracker.request_exit("ST", e_j)
         elif cfg.exit_on_st_flip and pos == _POS_SHORT and st_flip_up:
             tracker.request_exit("ST", e_j)
@@ -1330,7 +1380,8 @@ def run_s(
         allow_short_hour = (bar_hour != cfg.blocked_short_entry_hour) if cfg.block_short_entry_hour_enabled else True
 
         long_trig = (
-            cfg.allow_longs
+            (not daily_close_blocked)
+            and cfg.allow_longs
             and cross_up
             and not is_blocked
             and adx_ok
@@ -1340,7 +1391,8 @@ def run_s(
             and allow_long_hour
         )
         short_trig = (
-            cfg.allow_shorts
+            (not daily_close_blocked)
+            and cfg.allow_shorts
             and cross_down
             and not is_blocked
             and adx_ok

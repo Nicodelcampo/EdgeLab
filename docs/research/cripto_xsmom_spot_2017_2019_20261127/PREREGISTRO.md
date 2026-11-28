@@ -1,0 +1,16 @@
+# Pre-registro — CRIPTO_XSMOM_SPOT_PRE: Momentum Cruzado (`CR3_XSMOM`) Congelado en Binance Spot (`2017-08 → 2019-08`)
+
+Estado: PREREGISTRO — EF3 transferencia congelada en `CRIPTO_XSMOM_SPOT_PRE`. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v5 — §0–§8 (K32, K51 conteo previo, K60 muestra congelada pre-registrada sin excluir meses en cero post hoc, K62 verificación previa de Binance Vision spot 2017–2019 realizada HTTP 200).
+Antecedentes: «XSMOM spot Binance 2017 2019 antes perpetuos» — familias parecidas: CANASTA_AMPLIA, CARRIL2_CONFIANZA, CRIPTO_BINANCE; NO_REPETIR: F-CRIPTO-FUNDING-CARRY-PIT, F-SQX-TSMOM-SP-D1; código: tools/cripto_v3_2019.py:23, tools/cripto_v3_2019.py:33, tools/cripto_v3_2019.py:48
+Cambio respecto a falla previa: `F-CRIPTO-FUNDING-CARRY-PIT` descartó carry/shock de funding 8h y `F-SQX-TSMOM-SP-D1` probó TSMOM en S&P D1; aquí corremos exactamente el momentum cross-sectional congelado de `CRIPTO-PIT v3` (`CR3_XSMOM_21d_Stag5d` y `CR3_XSMOM_BetaNeut_Stag5d`) sin parámetros nuevos ni carry ni funding, sobre datos vírgenes anteriores a los futuros perpetuos (`data.binance.vision/data/spot/monthly/klines/*USDT/1d`, `2017-08 → 2019-08`).
+Diagnóstico de mecanismo: no aplica — cero grilla paramétrica (`2` reglas congeladas de `tools/cripto_pit_v3.py`, escalonadas `5d`, costo base `20 pb` RT, sensibilidad `10/20/30/40 pb`).
+Potencia previa: ventana de `25` meses calendario (`2017-08` a `2019-08`), que arroja ~`20–22` meses activos con regla `live60`; con `n = 20–22` meses esta corrida tiene potencia baja-media (~`0,45–0,55` a `Sh=1,0`, prueba de consistencia y signo fuera de muestra en un régimen histórico previo no tocado).
+
+## Justificación económica, reglas congeladas y control estricto de K60
+- **Universo punto-en-el-tiempo (PiT):** todos los pares `*USDT` verificados en Binance Spot entre `2017-08` y `2019-08` (incluidos activos luego deslistados como `BCCUSDT, VENUSDT, BCHABCUSDT, NULSUSDT, MITHUSDT`, excluyendo stablecoins `TUSDUSDT, PAXUSDT, USDCUSDT, USDSUSDT, BUSDUSDT, SUSDUSDT`). Selección mensual estrictamente causal `shift(1)`: top-`25` por `quote_volume` acumulado del mes previo (histeresis `<= 25` para salida consistente con `cripto_pit_v3`, o universo top-25 rank `<= 20/25`).
+- **Muestra primaria pre-registrada (K60):** `2017-10-01` → `2019-08-31` (`23` meses calendario post warmup de `60d` desde `2017-08-17`) con criterio exacto congelado `live60 & vol60 >= 0.25 & n >= 10`. **Ningún mes en cero dentro de esa ventana será eliminado en el veredicto primario.** Como sensibilidad explícitamente etiquetada se reportará también la regla relajada `live30 & n >= 6` (que captura meses tempranos de late-2017/early-2018 cuando Binance tenía menos pares USDT listados) y el desglose `2017` vs `2018–2019` (post-burbuja).
+- **Pruebas primarias (`2` pruebas):** `CR3_XSMOM_21d_Stag5d` y `CR3_XSMOM_BetaNeut_Stag5d` netas a `20 pb` RT (`0` funding por ser mercado spot con préstamo de corto / margen simétrico asumido en las fricciones `10/20/30/40 pb`).
+
+## 2. Cómo podría refutarse
+- Refutada según `PLAN_ESPIRAL_20261127 #5` si `t_mes <= 0` en la muestra primaria o si la ganancia positiva existe **sólo en 2017** y en `2018–2019` resulta `<= 0`.

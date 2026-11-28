@@ -27,7 +27,7 @@ estar posicionado «desde 1 minuto antes». Las solicitudes semanales de subsidi
 ForexFactory las marca rojas sólo en algunos tramos (en medium, p. ej., hasta 2023-03-09 y desde 2026-04-09); para cubrir la regla
 de Lucid en esos tramos, pasar `impactos=("tier1", "tier2")`.
 
-Cobertura: 2023-01-01 → 2026-12-31 con faltantes declarados en FUENTES.md (p. ej. solicitudes posteriores al
+Cobertura: 2008-01-01 → 2026-12-31 (2008-2022 desde fuentes históricas: Fed, ALFRED y regla del ISM) con faltantes declarados en FUENTES.md (p. ej. solicitudes posteriores al
 2026-10-22 y minutas del FOMC de nov/dic-2026 aún no fechadas). Fuera del rango de cobertura `cruza_noticia` falla
 cerrado (`FueraDeCobertura`) salvo `exigir_cobertura=False`.
 """
@@ -42,7 +42,7 @@ import pandas as pd
 
 RUTA = Path(__file__).resolve().parents[1] / "config" / "noticias" / "calendario_usd_tier1.csv"
 VENTANA_DEFAULT_MIN = (1, 1)   # (antes, después): LucidDaily fondeada, la más estricta del catálogo con algoritmos
-COBERTURA_DESDE = pd.Timestamp("2023-01-01", tz="UTC")
+COBERTURA_DESDE = pd.Timestamp("2008-01-01", tz="UTC")
 COBERTURA_HASTA = pd.Timestamp("2027-01-01", tz="UTC")   # exclusivo
 IMPACTOS = ("tier1", "tier2")
 COLUMNAS = ("ts_utc", "evento", "fuente_url", "impacto")

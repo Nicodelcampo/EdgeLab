@@ -9,6 +9,8 @@ Cuenta: reglas oficiales (ver docs/research/propfirm_lucidflex_20261117/RESULTAD
 mejor cierre y se fija en +$100 (al superar +$1.100 o al primer retiro), consistencia 40/50 % (mayor día / beneficio al llegar al objetivo;
 si no, se sigue), DLL $600 blando (aprox.: la pérdida del día se corta en −$600), retiro con 5 días ≥ $100 y neto del ciclo > 0, 50 % del
 beneficio total hasta $1.000, mínimo $500, 90 %, hasta 5 retiros. Bootstrap por bloques de 5 sesiones recentrado a la media declarada.
+K57 (2026-11-27): el DLL se aplica al CIERRE del día (optimista con tamaño grande). Para decidir tamaño usar tools/cartera_lucid.py
+simular --intradia, que lo aplica al mínimo intradía.
   python tools/lucid_canastas.py      # -> docs/research/propfirm_lucidflex_20261117/CANASTAS_LUCID.json
   python tools/lucid_canastas.py senales   # SOM + Franklin + T en MNQ por riesgo -> CANASTA_SENALES_LUCID.json
 """

@@ -33,6 +33,7 @@ REF = {  # (raiz, modulo en el CSV del arnes) -> corrida NT8 individual
     ("NQ", "Z_b15_e20_eff40_ATR50"): CAND / "Z" / "NT8_Z_NQ_fijo1.csv",
     ("NQ", "V_nm25_noCap_mae30"): CAND / "V" / "NT8_V_NQ_fijo1.csv",
     ("NQ", "SOM_sin_finde"): CAND / "SOM_sin_finde" / "NT8_SOM_sin_finde_NQ_fijo1.csv",
+    ("NQ", "SOMEOD_ext_NQ"): CAND / "SOMEOD" / "NT8_SOMEOD_NQ_fijo1.csv",
     ("NQ", "RQ5"): NUE / "NT8_RQ5_NQ.csv", ("ES", "RQ5"): NUE / "NT8_RQ5_ES.csv",
     ("NQ", "FRANKLIN"): NUE / "NT8_Franklin_NQ.csv", ("ES", "ES5N"): NUE / "NT8_ES5N_ES.csv",
     ("NQ", "C2_VZ"): NUE / "NT8_C2_VZ_NQ.csv", ("ES", "C2_VZ"): NUE / "NT8_C2_VZ_ES.csv",
@@ -51,10 +52,14 @@ def exportar(root: str, desde: str, hasta: str, dst: Path) -> Path:
 
 
 def compilar() -> Path:
+    import shutil
     import sync_ctrader_mt5_bots as S
     exe = H / "Harness.exe"
     srcs = [NT8 / "EdgeLabFundedSyncCore.cs", NT8 / "EdgeLabCarteraEngines.cs", NT8 / "EdgeLabCarteraBook.cs", H / "Harness.cs"]
-    cmd = [str(S.CSC_EXE), "/nologo", "/target:exe", "/optimize+", f"/out:{exe}", "/r:System.dll", "/r:System.Core.dll", *map(str, srcs)]
+    csc = str(S.CSC_EXE) if S.CSC_EXE.exists() else shutil.which("mcs")      # Linux: mono mcs (2026-11-27)
+    if csc is None:
+        raise SystemExit("no hay compilador C# (csc de .NET Framework o mono mcs)")
+    cmd = [csc, "/nologo", "/target:exe", "/optimize+", f"/out:{exe}", "/r:System.dll", "/r:System.Core.dll", *map(str, srcs)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         raise SystemExit(r.stdout + r.stderr)
@@ -66,13 +71,10 @@ def cboe_csv(dst: Path) -> Path:
     if nt8.exists():                      # el mismo archivo que leyeron las corridas NT8 (tools/exportar_vix_nt8.py)
         return nt8
     f = dst / "cboe_vol_diario.csv"
-    if not f.exists():
-        v = pd.read_parquet(ROOT / "data" / "m1nt8" / "cboe_volatility_daily.parquet")
-        cols = {c.lower(): c for c in v.columns}
-        fecha = v[cols.get("date", cols.get("fecha", v.columns[0]))]
-        out = pd.DataFrame({"fecha": pd.to_datetime(fecha).dt.strftime("%Y-%m-%d"),
-                            "vix": v[cols["vix"]], "vxn": v[cols["vxn"]], "vix9d": v[cols["vix9d"]]})
-        out.to_csv(f, index=False)
+    if not f.exists():                    # mismo formato que tools/exportar_vix_nt8.py (fecha,vix_close,vxn_close,vix9d_close)
+        from exportar_vix_nt8 import build_cboe_df
+        out = build_cboe_df(); out.insert(0, "fecha", out.index.strftime("%Y-%m-%d"))
+        out.to_csv(f, index=False, float_format="%.4f")
     return f
 
 
@@ -103,7 +105,7 @@ def main(argv=None) -> int:
     vol = cboe_csv(tmp)
     res = {}
     for modo in a.modos.split(","):
-        r = subprocess.run([str(exe), modo, str(a.out), str(news), str(vol), "1" if a.interdia else "0", a.comp, *barras],
+        r = subprocess.run([*([] if sys.platform == "win32" else ["mono"]), str(exe), modo, str(a.out), str(news), str(vol), "1" if a.interdia else "0", a.comp, *barras],
                            capture_output=True, text=True)
         print(r.stdout.strip()); print(r.stderr.strip()[-2000:])
         for root in roots:

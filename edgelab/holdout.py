@@ -91,3 +91,39 @@ def a5_bloque(trade_date) -> str:
         for v in (_dia_habil(td, 1), _dia_habil(td, -1)):
             if v < HOLDOUT_PRIMERA_SESION_INT and a5_meses(v // 10000)[v // 100 % 100] == "HOLDOUT": return "EMBARGO"
     return b
+
+
+def mascara_a5_limpia(fechas_entrada, fechas_salida=None):
+    """Devuelve lista/array bool True sólo cuando entrada (y salida si se pasa) caen estrictamente en DESC o REP de A5."""
+    import numpy as np
+    blq_in = [a5_bloque(f) in ("DESC", "REP") for f in fechas_entrada]
+    if fechas_salida is None:
+        return np.asarray(blq_in, dtype=bool)
+    blq_out = [a5_bloque(f) in ("DESC", "REP") for f in fechas_salida]
+    return np.asarray(blq_in, dtype=bool) & np.asarray(blq_out, dtype=bool)
+
+
+def exigir_sin_holdout_no_abierto(fechas, familia: str, ventanas_path=None) -> None:
+    """K60/A5: falla cerrado si `fechas` incluye sesiones HOLDOUT A5 o TERMINAL sin apertura vigente registrada para `familia`."""
+    import json
+    from pathlib import Path
+    blqs = {a5_bloque(f) for f in fechas}
+    if "TERMINAL" in blqs:
+        raise ValueError(f"K60/A5 {familia}: incluye sesiones TERMINAL >= {HOLDOUT_PRIMERA_SESION} sin autorización")
+    if "HOLDOUT" not in blqs:
+        return
+    ruta = Path(ventanas_path) if ventanas_path else Path(__file__).resolve().parents[1] / "docs/research/HOLDOUT_VENTANAS.jsonl"
+    vig = []
+    if ruta.exists():
+        for line in ruta.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            if r.get("familia") != familia:
+                continue
+            if r.get("tipo") == "apertura":
+                vig = [v for v in vig if v["cid"] != r["cid"]] + [r]
+            elif r.get("tipo") == "anulacion":
+                vig = [v for v in vig if v["cid"] != r["cid"]]
+    if not vig:
+        raise ValueError(f"K60/A5 {familia}: intenta leer meses HOLDOUT sin apertura vigente registrada en HOLDOUT_VENTANAS.jsonl")

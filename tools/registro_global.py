@@ -3,7 +3,7 @@
 `docs/research/TRIAL_REGISTRY_GLOBAL.jsonl` encadenado (TrialRegistry). Idempotente: volver a correrlo no duplica.
 Toda campaña nueva debe registrarse también acá (discovery_scan usa este archivo por defecto si no se pasa --registry).
 
-    python tools/registro_global.py            # consolida
+    python tools/registro_global.py consolidar # consolida (sin argumentos sólo muestra la ayuda: K63, 2026-11-27)
     python tools/registro_global.py --total    # imprime el total de pruebas del proyecto
     python tools/registro_global.py preregistrado <campaña> <FAMILIA> <n_pruebas> <PREREGISTRO.md>
         # la ÚNICA forma de contar una campaña fuera de la maquinaria estándar (K32): valida el pre-registro antes de registrar
@@ -40,6 +40,10 @@ def exigir_contada(prereg) -> None:
 
 def main():
     if sys.argv[1:2] == ["preregistrado"]: return preregistrado(*sys.argv[2:6])
+    if not ({"consolidar", "--total"} & set(sys.argv[1:])):
+        # K63: correrlo sin argumentos (pensando en `preregistrado`) consolidaba y reescribía el registro global sin querer.
+        print(__doc__)
+        raise SystemExit(2)
     g = TrialRegistry(GLOBAL)
     if "--total" not in sys.argv:
         for f in sorted((REPO / "docs" / "research").glob("*/trial_registry.jsonl")):
