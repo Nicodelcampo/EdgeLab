@@ -78,7 +78,7 @@ def grabar() -> int:
     if len(intr) < 100:
         print(f"{fecha}: la hoja Intraday tiene {len(intr)} filas; parece vacía o a medio cargar. No se graba.")
         return 1
-    if ahora.date().isoformat() == fecha and ahora.hour < 17:
+    if ahora.date().isoformat() == fecha and (ahora.hour, ahora.minute) < (17, 5):
         print(f"{fecha}: la rueda todavía no terminó ({ahora:%H:%M} en Buenos Aires). Correr después de las 17:05.")
         return 1
     out.mkdir(parents=True, exist_ok=True)

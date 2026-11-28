@@ -1,0 +1,23 @@
+# Pre-registro — PRE_FOMC_LIMPIO_20Y: Deriva Pre-FOMC con Calendario Ex-Ante Puro, Transferencia Multi-Mercado ATJ-28 y Plan Formal K27/K42 (2006–2026-09, DESC+REP)
+
+Estado: PREREGISTRO — EF3 en `PRE_FOMC_LIMPIO_20Y` (derivada de `M1_RELVAL_EVENTOS_20Y`). North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v5 — §0–§8 (K27/K42 potencia al nivel LORD++, K32/K51 conteo previo, K33 costos estimados EMD, K58 alineación Dukascopy, K60/A5 `exigir_sin_holdout_no_abierto` y `mascara_a5_limpia`).
+Antecedentes: «Pre-FOMC drift calendario programado sin reuniones emergencia transferencia indices» — familias parecidas: FUNDEDSYNC_TRANSFER, CARRIL2_CONFIANZA, ATLAS_CONTEXTO_VETOS_R; NO_REPETIR: F-FRECUENCIA-POR-SELECCION, F-HFT-RUPTURA-RASGOS-SIN-EFECTO, F-PRERANGO-0812; código: tools/transferencia_multiactivo.py:1, tools/transferencia_multiactivo.py:19, tools/transferencia_multiactivo.py:28
+Cambio respecto a falla previa: `F-FRECUENCIA-POR-SELECCION` y `F-PRERANGO-0812` probaron filtros o barridos de pre-rango intradía sin evento macro ni placebo; `F-HFT-RUPTURA-RASGOS-SIN-EFECTO` evaluó rasgos de clusters HFT. Aquí fijamos exactamente el mecanismo de Lucca & Moench (2015) sobre calendario 100 % ex ante programado (`8` reuniones/año, `7` en `2020`, `6` en `2026-01..09`, excluyendo `18` filas no programadas / emergencia / Jackson Hole / duplicado día-1 del parquet `us_market_events_calendar_2006_2026.parquet`), salida `5` min antes del horario histórico real (`12:25 NY` en conferencias `2011–2012`, `14:10 NY` resto pre-2013, `13:55 NY` `>= 2013`), evaluando neto Mini y Micro (K3), contraste contra placebo en días sin FOMC (ATJ-28), transferencia congelada a `EMD` (K33), `RTY`, `GC` y `4` índices extranjeros Dukascopy (`K58`) estrictamente en `DESC+REP` (`HOLDOUT A5` `63m` 100 % sellado).
+Diagnóstico de mecanismo: no aplica — cero grilla paramétrica (`5` pruebas sobre una regla fija congelada con `0` perillas ajustables).
+Potencia previa: `167m` `DESC+REP` (`2008-01 → 2026-09`) con ~`120` eventos FOMC programados limpios en el núcleo `ES/NQ/YM`; a efecto esperado `Sh=0,67` (`t≈2,50` en `167m`), la potencia en desarrollo supera `0,78`, y con los `~43` eventos vírgenes de los `63m` sellados de `HOLDOUT A5` se calculará la potencia exacta bajo `α=0,05` y bajo el nivel LORD++ reservado (K42) antes de decidir si pedir apertura a Nico.
+
+## Justificación económica y pruebas pre-registradas (`HOLDOUT A5` sellado)
+- **Ventana y máscara estricta (K60/A5):** toda observación cuyo día de entrada (`t-1`) o salida (`t`) caiga fuera de `DESC` o `REP` (`mascara_a5_limpia`) queda excluida, y se ejecuta `exigir_sin_holdout_no_abierto(..., "PRE_FOMC_LIMPIO_20Y")`.
+- **Calendario limpio (`165` reuniones programadas en `2006–2026-09`):** excluye `{"2007-06-18","2007-08-10","2007-08-17","2008-01-22","2008-03-11","2008-10-08","2012-07-31","2013-10-16","2014-03-04","2019-10-04","2019-10-11","2020-03-02","2020-03-03","2020-03-19","2020-03-23","2020-03-31","2020-08-27","2025-08-22"}`.
+- **Costos K33 declarados:** `ES, NQ, YM, RTY, GC` con `costos.friccion_rt_puntos`; micros `MES, MNQ, MYM` con sus tarifas canónicas; `EMD` autorizado explícitamente vía `costos.estimados_permitidos(PRE)` (`spread_ticks=2,0`, `Topstep=3,78`); índices extranjeros Dukascopy (`DAX, EuroStoxx, FTSE, Nikkei`, tras compuerta K58 `-7h -> NY`) con `2,0 pb` RT base y `4,0 pb` estrés `2x`.
+- **Las `5` pruebas primarias (todas en `DESC+REP`):**
+  1. Núcleo `ES+NQ+YM` neto Mini (`2008-01 → 2026-09`) y neto Micro (`MES+MNQ+MYM`).
+  2. Placebo ATJ-28: retorno medio del drift 24h en días FOMC programados minus drift 24h en días no-FOMC `DESC+REP` (`Welch t-stat`).
+  3. Consistencia post-publicación Lucca-Moench (`2015-03 → 2026-09` y `2022 → 2026-09`) + robustez sin el mejor evento ni los 5 mejores.
+  4. Transferencia congelada ATJ-28 a instrumentos nunca optimizados: CME `EMD` (`2008–2026-09`), `RTY` (`2017–2026-09`) y `GC`.
+  5. Transferencia congelada ATJ-28 a índices extranjeros Dukascopy (`DAX, EuroStoxx, FTSE, Nikkei`, ventana nocturna/NY exacta tras K58).
+- **Auditoría formal de potencia K27/K42 sin leer retornos de HOLDOUT:** conteo calendario puro de eventos FOMC programados dentro del `HOLDOUT A5` sellado (`2008–2026-09`) para estimar potencia de una lectura única a nivel `LORD++` (`edgelab/funnel/libro_lord.py`).
+
+## Cómo podría refutarse
+- Si al limpiar el calendario y ajustar la salida a `12:25` / `14:10` / `13:55`, el núcleo neto Mini/Micro cae debajo de `t = 1,645`, pierde contra el placebo de días no-FOMC, se apaga desde `2015-03`, o no alcanza potencia K27 >= `0,80` al nivel LORD++ ni siquiera sumando activos vírgenes en una única lectura.

@@ -41,12 +41,26 @@ def mejor_desfase(a: pd.Series, b: pd.Series, desfases_min: Iterable[int] = rang
 
 def exigir_alineada(a: pd.Series, b: pd.Series, corr_min: float = 0.5,
                     desfases_min: Iterable[int] = range(-180, 181, 30), etiqueta: str = "") -> float:
-    """Falla si la mejor correlación no está en desfase 0 o es menor que `corr_min`. Devuelve la correlación en desfase 0."""
+    """Falla si la mejor correlación no está en desfase 0 o es menor que `corr_min` (incluye barrido fino ±5 min). Devuelve la correlación en desfase 0."""
     k, c = mejor_desfase(a, b, desfases_min)
     if k != 0:
         raise ValueError(f"K58 {etiqueta}: la fuente está corrida {k} min respecto de la referencia (corr {c:.3f}); "
                          "corregir la lectura de la hora antes de medir")
+    k_fino, c_fino = mejor_desfase(a, b, range(-5, 6, 1))
+    if abs(k_fino) > 0 and c_fino > c + 1e-4:
+        raise ValueError(f"K58 {etiqueta}: desfase fino de {k_fino} min detectado (corr {c_fino:.3f} vs {c:.3f} en 0); "
+                         "alinear apertura/cierre de vela")
     if c < corr_min:
         raise ValueError(f"K58 {etiqueta}: correlación {c:.3f} < {corr_min} en desfase 0; la referencia no sirve o los datos no son "
                          "del mismo subyacente")
     return c
+
+
+def exigir_cierre_causal_diario(cierre_insumo_utc_h: float, cierre_activo_utc_h: float,
+                                nombre_insumo: str = "", nombre_activo: str = "") -> None:
+    """Guarda K58-D1 (cierre Sídney/Tokio vs CBOE NY): falla si un insumo diario cierra después que el activo en la misma fecha."""
+    if float(cierre_insumo_utc_h) > float(cierre_activo_utc_h):
+        raise ValueError(
+            f"K58-D1 {nombre_insumo}->{nombre_activo}: el insumo cierra a las {cierre_insumo_utc_h:.2f} UTC, "
+            f"después que el activo ({cierre_activo_utc_h:.2f} UTC) en la misma fecha (look-ahead diario)"
+        )
