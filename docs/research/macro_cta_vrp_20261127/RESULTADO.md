@@ -15,3 +15,6 @@ Diagnóstico de grilla: cero grilla paramétrica (`4` reglas estándar escalonad
 Episodios: evaluado en `DESC` (`144m`) + `REP` (`42m`); `HOLDOUT A5` sellado.
 
 Aporte al referente: suma mecanismos macro no-equity y de estructura temporal de volatilidad con `20+` años de historia y `63m` de holdout intactos.
+
+## Auditoría Claude (2026-11-28)
+Ver `docs/research/auditoria_claude_20261128/REVISION_ESPIRAL_ANTIGRAVITY.md`.

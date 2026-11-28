@@ -15,3 +15,6 @@ Diagnóstico de grilla: cero grilla paramétrica (`4` reglas fijas con costos ca
 Episodios: evaluado en `DESC` (`129m`) + `REP` (`38m`) = `167m` (`2008-01 → 2026-09`, `159` eventos FOMC); `HOLDOUT A5` (`63m`) sellado.
 
 Aporte al referente: mide 4 mecanismos ortogonales sobre `20` años de barras `M1` reales CME (`ES, NQ, YM, RTY, GC`) con `63m` sellados.
+
+## Auditoría Claude (2026-11-28)
+Ver `docs/research/auditoria_claude_20261128/REVISION_ESPIRAL_ANTIGRAVITY.md`.

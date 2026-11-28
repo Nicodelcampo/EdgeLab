@@ -21,3 +21,6 @@ Estado: VIGENTE — análisis descriptivo sobre `167m` comunes `DESC+REP` (`N_ef
 | FXF_Canasta     |            0     |      -0.032 |         0.135 |         0.003 |             0.664 |         1     |
 
 Aporte al referente: integra los 4 pilares de Fase 2 con los frentes de Fase 1 sin abrir ningún holdout sellado.
+
+## Auditoría Claude (2026-11-28)
+Ver `docs/research/auditoria_claude_20261128/REVISION_ESPIRAL_ANTIGRAVITY.md`.

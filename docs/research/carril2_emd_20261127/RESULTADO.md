@@ -38,3 +38,6 @@ Diagnóstico de grilla: cero grilla paramétrica (reglas congeladas de Carril 2 
 Episodios: desglose explícito pre-2009, 2009–2026-09, 2019–2026-09 y bloques DESC/REP/HOLDOUT en la tabla superior.
 
 Aporte al referente: mide fuera de muestra instrumental si el mecanismo de Carril 2 sobrevive sobre su placebo exacto `N` en EE. UU. post-2009 sobre MidCap (`EMD`).
+
+## Auditoría Claude (2026-11-28)
+Ver `docs/research/auditoria_claude_20261128/REVISION_ESPIRAL_ANTIGRAVITY.md`.

@@ -24,3 +24,6 @@ Estado: VIGENTE — análisis descriptivo exclusivamente sobre `DESC+REP` (`0` p
 | **Macro_RP4** | `+0.058` | `+1.000` | `+0.335` | `-0.207` |
 | **MVC_CTA_VRP** | `+0.048` | `+0.335` | `+1.000` | `+0.021` |
 | **MRV_PreFOMC** | `-0.038` | `-0.207` | `+0.021` | `+1.000` |
+
+## Auditoría Claude (2026-11-28)
+Ver `docs/research/auditoria_claude_20261128/REVISION_ESPIRAL_ANTIGRAVITY.md`.

@@ -31,3 +31,6 @@ Episodios: cubre `2006/2008–2026-09` completo sobre los `4` activos con volati
 - **Hallazgo de alineación horaria K58/K61 en `ASX200`:** `ASX200` cierra a las `16:00 AEST` (`02:00 NY`), `14` horas **antes** del cierre `16:15 NY` de CBOE `^VIX` en la misma fecha calendario; usar `^VIX` sin desfasar generó look-ahead intradía artificial en `ASX200 C2_VZ_1F` (`Sh=2.797, t=12.11`), que desaparece por completo bajo `^AXVI` simultáneo (`Sh=0.163, t=0.71`), mientras `C2_VBB` pasa de `-0.896` con `^VIX` a `+0.385 (t=1.67)` con `^AXVI`.
 
 Aporte al referente: corrige el error K61 donde se usó `^VIX` de EE. UU. como proxy universal en reglas de volatilidad implícita y detecta el desfase de huso horario Sydney vs CBOE.
+
+## Auditoría Claude (2026-11-28)
+Ver `docs/research/auditoria_claude_20261128/REVISION_ESPIRAL_ANTIGRAVITY.md`.

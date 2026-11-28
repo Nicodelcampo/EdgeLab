@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-801 scripts.
+802 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -59,6 +59,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/auditar_corridas_nube_20261029.py` | Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10). |
 | `tools/auditar_procedencia.py` | Barre un directorio temporal y busca evidencia que sostenga afirmaciones vivas. |
 | `tools/auditoria_claude_20261127.py` | Auditoria forense de los 33 commits de Claude (8d7706d4 -> 80164f3d, PR #203). |
+| `tools/auditoria_espiral_20261128.py` | Auditoría Claude 2026-11-28 de la Espiral (Antigravity): re-mide CARRIL2_VOL_LOCAL sólo con meses DESC+REP de A5. |
 | `tools/auditoria_exclusiones_fs.py` | AUDITORIA-EXCLUSIONES (pre-registro docs/research/auditoria_exclusiones_fs_20261119/PREREGISTRO.md): T y R de FundedSync en NQ con las |
 | `tools/autopilot_activar_escalera.py` | Activa la regla de decisión `escalera_v1` en el autopilot del Debian, en dos pasos (decisión de Nico, 2026-10-22: «hacé lo que |
 | `tools/autopilot_doctor.py` | Chequeo previo al arranque del autopilot en el Debian (solo lectura). Sale con 0 si todo lo imprescindible está bien. |
