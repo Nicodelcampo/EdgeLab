@@ -265,7 +265,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (43)
+## PALANCA_DE_DISENO (44)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -279,6 +279,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Toda transferencia a otro instrumento, CFD contra futuros, fuentes intradía nuevas
   - Siguiente: Usar a5.calibrar_por_sesion y alineacion_horaria.exigir_alineada en cada fuente nueva (ATJ-29)
   - Evidencia: `docs/research/trz_extranjeros_20261127/PREREGISTRO.md`, `docs/research/trz_extranjeros_20261127/CALIBRACION_DIAGNOSTICO.json`, `edgelab/research/alineacion_horaria.py`
+- **Guardas en código para impedir sesgo por desfase fino de 1 min (exigir_alineada ±5 min), look-ahead diario entre husos horario UTC (exigir_cierre_causal_diario K58-D1) y lecturas de HOLDOUT A5 sin apertura registrada (mascara_a5_limpia y exigir_sin_holdout_no_abierto K60/A5)** (`F-PALANCA-GUARDAS-HORA-Y-HOLDOUT`, 2026-11-28, sesion)
+  - Efecto: Cierra brechas de código detectadas tras la auditoría de la Espiral (ASX200 06:00 UTC vs ^VIX 20:15 UTC y lectura sin máscara A5 en CARRIL2_EMD/VOL_LOCAL), y ajusta bonos_masella_grabar.py a (17, 5) BA.
+  - Dónde: edgelab/research/alineacion_horaria.py, edgelab/holdout.py, tools/bonos_masella_grabar.py y tests/
+  - Siguiente: Llamar exigir_cierre_causal_diario, mascara_a5_limpia y exigir_sin_holdout_no_abierto en todo script nuevo desde el pre-registro.
+  - Evidencia: `docs/research/auditoria_claude_20261128/RESPUESTA_AUDITORIA_ANTIGRAVITY.md`, `tests/research/test_alineacion_horaria.py`, `tests/test_guardas_20261127.py`
 - **Las series FundedSync de los estudios de cartera usan todos los meses, también los HOLDOUT de A5** (`F-FUNDEDSYNC-SIN-HOLDOUT-A5-PARA-VARIANTES-B`, 2026-11-27, agente)
   - Efecto: Corrección 2026-11-27: los stops ATR de R/Z/N/W NO se eligieron mirando el holdout; son la configuración de fundedsync_prop_opt_20261122 (DESC→REP) y la que corre en NT8. Sólo V_nm30_tp1400 y T_ES_adapt son variantes nuevas. Sigue en pie que los estudios de cartera (Antigravity y Claude) leyeron los 478 días HOLDOUT A5 de las series FundedSync. A igual volatilidad la regla de Claude no supera a la actual (WF 1,91 vs 1,89); Regla_V2_Clean (motores operables en NT8, pesos acotados) sí baja la caída intradía (−8.712 vs −14.499, Sharpe 1,94 vs 1,89).
   - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09
@@ -540,10 +545,20 @@ _Extraído por el meta-analista de una campaña cerrada; falta revisión._
   - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
   - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
 
-## EN_SEGUIMIENTO (30)
+## EN_SEGUIMIENTO (32)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Deriva Pre-FOMC sobre calendario ex ante puro (165 reuniones programadas, excluidas 18 de emergencia/Jackson Hole/duplicado) y salida 5 min antes del horario histórico real (12:25 / 14:10 / 13:55 NY) en ES/NQ/YM + transferencia ATJ-28 (EMD, RTY, GC, DAX, EuroStoxx, FTSE, Nikkei), DESC+REP (HOLDOUT A5 sellado)** (`F-PRE-FOMC-LIMPIO-20Y`, 2026-11-28, sesion)
+  - Efecto: Al limpiar además las 8 fechas de emergencia/repo/Jackson Hole (2013-10-16, 2019-10-04/11, 2020-03-02, 2020-08-27, 2025-08-22) y fijar 12:25/14:10 ET, el núcleo ES+NQ+YM baja de Sh=0,685 (t=2,56) a Mini Sh=0,387 (t=1,45, DESC 0,369, REP 0,498; Micro MES/MNQ/MYM Sh=0,338 t=1,26; Bruto Sh=0,529 t=1,98). Placebo ATJ-28: +7,42 vs +0,76 pb (+6,66 pb/ev, Welch t=1,29). Post-2015-03: Sh=0,234 (t=0,68), 2022+: Sh=0,929 (t=1,74); sin top-5 eventos t=0,21. Transferencia: EMD +4,64 pb (t=0,80), RTY +3,94 (t=0,56), GC +2,70 (t=0,51), Europa negativa (DAX -0,21, EuroStoxx -0,73, FTSE -0,42), Nikkei +0,37. Plan K27/K42 en 41 eventos de HOLDOUT A5: potencia 0,235 (alfa=0,05) y 0,085 (LORD++ alfa=0,01094).
+  - Dónde: ES, NQ, YM, EMD, RTY, GC (M1 NT8) y DAX, EuroStoxx, FTSE, Nikkei (M1DK K58), 2008-01 → 2026-09 DESC+REP
+  - Siguiente: NO abrir HOLDOUT A5 (potencia K42 0,085 << 0,80 y t=1,45 no concluyente tras limpiar reuniones no programadas). Dejar sólo como seguimiento pasivo sin peso autónomo ni apertura.
+  - Evidencia: `docs/research/pre_fomc_limpio_20261127/RESULTADO.md`, `docs/research/pre_fomc_limpio_20261127/RESULTADO.json`
+- **Explicación de la ventaja de T (apertura NT8) por el flujo de rebalanceo de ETFs apalancados 3x (TQQQ/SQQQ, UPRO/SPXL/SPXU/SPXS, UDOW/SDOW, TNA/TZA) sobre futuros M1, 2010–2026-09 DESC+REP (PLAN_ESPIRAL #2)** (`F-T-MECANISMO-ETF-APALANCADOS`, 2026-11-28, sesion)
+  - Efecto: En orden cross-seccional (2021–2026-09 DESC+REP): RTY tiene ratio_3x = 5,09% (7,40% pre-2021, 990M USD/d), MAYOR que NQ (4,05%, 7.225M/d) y 10x mayor que ES (0,51%, 1.842M/d; YM 1,57%, EMD 0,00%), invirtiendo la predicción porque T es débil en RTY y fuerte en ES. Correlación Spearman mensual R vs ratio60_lag: NQ=-0,068, ES=+0,057 (65m DESC+REP). Presión causal día previo t-1->t alta vs baja: NQ t=1,29 (p=0,0991), ES t=0,25; alineación de signo en NQ FUNDEDSYNC_OPS t=0,86.
+  - Dónde: ETFs 3x Yahoo + futuros M1 NT8 (NQ, ES, YM, RTY, EMD) + SERIES_DIARIAS / FUNDEDSYNC_OPS, 2010 → 2026-09 DESC+REP
+  - Siguiente: La hipótesis de rebalanceo de ETFs 3x no explica ni la serie temporal ni el orden entre índices (RTY>NQ>>ES); mantener baja la confianza previa de T (sizing mínimo) hasta acumulación natural de forward.
+  - Evidencia: `docs/research/t_mecanismo_etf_apalancados_20261127/RESULTADO.md`, `docs/research/t_mecanismo_etf_apalancados_20261127/RESULTADO.json`
 - **Momentum de serie de tiempo mensual (signo 12 meses, riesgo inverso a vol 63 d) en 14 ETFs de tasas, metales, energía, granos y divisas** (`F-TENDENCIA-NO-EQUITY-MENSUAL`, 2026-11-27, agente)
   - Efecto: DESC de A5 (130 meses 2008–2026): +0,29 %/mes, t 0,96, Sharpe 0,29, MDE Sharpe 0,76; energía 40 % y metales 38 % de la ganancia (USO 37 %); pierde en 2021–2024; corr. mensual con Intradía +0,07. SIN_EVIDENCIA, viva (REP no leída, HOLDOUT sellado).
   - Dónde: ETFs Yahoo ajustados 2005 → 2026-09, partición A5 por mes

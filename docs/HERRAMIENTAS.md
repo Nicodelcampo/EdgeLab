@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-802 scripts.
+804 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -620,6 +620,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/picos_robustos_visor.py` | Capa del visor «Picos robustos» (diseño de Nico 2026-11-19): pares de picos y grupos con puntaje, por variante. M1. |
 | `tools/pivotes_barrido.py` | PIVOTES-BARRIDO-MES — OK de Nico 28/09. Manifiesto: docs/research/MANIFIESTO_PIVOTES_BARRIDO_MES_20260928.md |
 | `tools/potencia_previa.py` | Potencia y frecuencia ANTES de invertir en una estrategia (mejora, holdout o forward): K27–K29 de |
+| `tools/pre_fomc_limpio_20261127.py` | PRE-FOMC-LIMPIO-20Y: Deriva Pre-FOMC con calendario 100% programado ex ante, salida 5 min antes del comunicado real, |
 | `tools/pred004_analyze.py` | pred004_analyze.py — el instrumento que mide PRED-004 COMO FUE ESCRITA. |
 | `tools/probe_new_ticks_deep.py` | Validacion profunda de muestras de ticks NUEVOS (fuera de los datasets Kaggle de Nico): |
 | `tools/probe_tick_sources.py` | Sonda de solo lectura para verificar fuentes gratuitas de datos de tick (Dukascopy, Binance Futures, Exness). |
@@ -737,6 +738,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/sweep_bigtrap2_tickframes.py` | Barrido de Tickframes para BigTrap2 (10t, 25t, 50t, 100t, 200t) sobre Oro (GC). |
 | `tools/sync_ctrader_mt5_bots.py` | Syncs, installs, and compiles the EdgeLabFundedSync NT8, cTrader (C#), and MT5 (MQL5) bot suites. |
 | `tools/sync_jforex_bin_sellado.py` | Merge JForex4 E:\dukascopy_HOLDOUT_SELLADO\<INST>\ticks\2026-11-16..*.bin into C:\EdgeLab\sellado. |
+| `tools/t_mecanismo_etf_apalancados_20261127.py` | T-MECANISMO-ETF-APALANCADOS (`PLAN_ESPIRAL_20261127 #2`): prueba si la ventaja de T (apertura NT8) sigue el flujo de |
 | `tools/t_regimen.py` | T-REGIMEN: meseta de parámetros y PBO del T de FundedSync en NQ (pre-registro docs/research/t_regimen_20261118/PREREGISTRO.md). |
 | `tools/tabla_decision_pnk.py` | TABLA DE DECISIÓN P/N/K — para elegir la geometría ANTES de mirar zonas. |
 | `tools/tablas.py` | Tablas de eventos de punta a punta con UNA herramienta (edgelab/research/tablas.py; AUTOMATIZACION_PROCESOS_20261111). |

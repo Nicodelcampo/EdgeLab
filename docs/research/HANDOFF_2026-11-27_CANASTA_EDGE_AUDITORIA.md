@@ -288,3 +288,18 @@ Ejecutados los `4` pilares pre-registrados y contados (K32/K51/K58/K60/K61/K64) 
    - Corrección K61 (`ASX200/^AXVI`, `Dow/^VXD`, `Russell2000/^RVX`, `GC/^GVZ`; Yahoo `^V2TX/^VHSI/^JNIV/^VDAX` dan 404 bajo K62): **`C2_VBB`** sube de `-0,075` con `^VIX` a **`+0,427 (t=1,73, diff=+0,589 t=2,32)`** y `C2_EVRP_1F` a `+0,614 (t=2,80)`. **Hallazgo K58/K61 crítico:** en `confianza_sin_forward`, `ASX200` (`16:00 AEST = 02:00 NY`) usaba CBOE `^VIX` del mismo día (`16:15 NY`, **`14h` después**), creando un falso `Sh=2,797 (t=12,11)` en `C2_VZ` que cae a `0,163 (t=0,71)` con `^AXVI` simultáneo.
    - Reconciliación `#7` (`canasta_amplia_20261127/SERIE_CANONICA_H3.md`): `SERIE_CANONICA_CARRIL2` sin censura de frontera da `DESC=1,068 (2249 ops)`, `REP=1,256 (589 ops)`, `HOLDOUT=1,057 (902 ops)`, `TODO 249m=1,098 (t=5,00)`.
    - Síntesis Fase 2 (`167m` comunes DR): **`N_eff PCA 5F = 4,62 / 5,00`** (`C2, RP4, MVC, MRV3, FXF3`); **`Pool_Sellado_3F_EQ (MVC+MRV+FXF3, 63m HO intacto)` = `DR Sh=1,060 (t=3,95)`** (`K27 1,0x=0,783`, `40/40/20: Sh=1,071, K27 1,0x=0,791`); `Arquitectura_5F_20y` = **`DR Sh=1,250 (t=4,66)`**.
+
+## 18. Auditoría de Claude + Pre-FOMC Limpio + Mecanismo T ETFs Apalancados (Antigravity, 2026-11-28)
+
+1. **Auditoría cruzada (`auditoria_claude_20261128/RESPUESTA_AUDITORIA_ANTIGRAVITY.md`) y guardas nuevas en código:**
+   - Se aceptan las correcciones de Claude sobre lecturas HOLDOUT sin apertura en `EMD`/`VOL_LOCAL`, `MVC4=beta` pasivo y pools post hoc.
+   - Guardas en código agregadas + testeadas: barrido fino `±5m` y `exigir_cierre_causal_diario` (K58-D1 UTC) en `edgelab/research/alineacion_horaria.py`; `mascara_a5_limpia` y `exigir_sin_holdout_no_abierto` (K60/A5) en `edgelab/holdout.py`; y guarda `(17, 5)` BA en `tools/bonos_masella_grabar.py`.
+
+2. **`PRE_FOMC_LIMPIO_20Y` (`tools/pre_fomc_limpio_20261127.py`, `DESC+REP` limpio, HOLDOUT 100% sellado):**
+   - Limpieza completa del calendario (`165` fechas programadas exactas ex ante: `18` excluidas por emergencia/duplicado/Jackson Hole; salidas reales `12:25` / `14:10` / `13:55` ET).
+   - Al retirar además las fechas `2013-10-16`, `2019-10-04/11`, `2020-03-02`, `2020-08-27` y `2025-08-22`, el núcleo `ES+NQ+YM` (`102` eventos `DESC+REP`) cae de `Sh=0,685 (t=2,56)` a **Mini `Sh=0,387 (t=1,45)`**, **Micro `0,338 (t=1,26)`**, placebo ATJ-28 Welch **`t=1,29` (`+6,66 pb/ev`)**, post-2015 `Sh=0,234 (t=0,68)` y sin top-5 eventos `t=0,21`. Europa negativa (`DAX -0,21, EuroStoxx -0,73, FTSE -0,42`).
+   - Plan K27/K42 sobre los `41` eventos de `HOLDOUT A5`: potencia **`0,235`** (`alfa=0,05`) y **`0,085`** (`LORD++ alfa=0,010937`). **Conclusión: NO abrir HOLDOUT A5 para Pre-FOMC.**
+
+3. **`T_MECANISMO_ETF_APALANCADOS` (`PLAN_ESPIRAL #2`, `tools/t_mecanismo_etf_apalancados_20261127.py`, `DESC+REP` estricto):**
+   - El ratio `DollarVol ETF 3x / DollarVol Futuro` (`2021–2026-09`) es **`5,09%` en `RTY`** (`7,40%` en `2010–2020`, `990M/d`), **superior a `NQ` (`4,05%`) y 10x superior a `ES` (`0,51%`; `YM 1,57%`, `EMD 0,00%`)**, contradiciendo el orden observado de `T` (`RTY` débil vs `ES/NQ` positivos).
+   - Correlación Spearman mensual (`65m` DESC+REP, valores en USD de `SERIES_DIARIAS`): `NQ=-0,068`, `ES=+0,057`; presión causal `t-1 → t` no significativa (`NQ t=1,29`, `ES t=0,25`; lado en `FUNDEDSYNC_OPS t=0,86`). La hipótesis de ETFs apalancados `3x` **no explica `T`** → mantener tamaño prudente en forward.
