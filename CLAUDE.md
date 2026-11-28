@@ -64,6 +64,8 @@ Recordatorios:
 >   hacía. La apertura de su HOLDOUT A5 sellado está pre-registrada y bloqueada por K27 (decisión de Nico).
 > - **Errores corregidos:** `ResolveTz` caía a UTC en mono; el simulador de cuentas aplicaba el DLL al cierre (K57).
 > - **Cripto y tendencia no-equity:** sin evidencia.
+> - **Cierre 28-nov:** errores K58–K64 con sus guardas (`LEER_ANTES_DE_CADA_CORRIDA.md` v5 §8), prácticas ATJ-28–31 y plan siguiente en
+>   `docs/research/PLAN_ESPIRAL_20261127.md` (handoff §15).
 
 ### Estado al 2026-11-20
 

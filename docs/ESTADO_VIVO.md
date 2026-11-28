@@ -1,13 +1,13 @@
 # Estado vivo de EdgeLab (snapshot maestro de contexto)
 
 Estado: VIGENTE
-Fecha: 2026-11-27
+Fecha: 2026-11-28
 Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 
 ## 1. Anclas e Invariantes (fail-closed)
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
-- Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
+- Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v5 (2026-11-28)
 - Contador global: `788` campanas / `538,657,310` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
@@ -21,7 +21,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 48 | Palancas (`PALANCA_DE_DISENO`): 41
+- Pistas vivas (`PISTA_VIVA`): 48 | Palancas (`PALANCA_DE_DISENO`): 43
   - `F-SUPERCARTERA-V2-MULTIFRENTE` (2026-11-27): Super-Canasta v2 multi-frente ortogonal a volatilidad identica 10% (W-FRI/M) y CSCV limpio…
   - `F-REGLA-CARTERA-DECORRELACIONADA-B` (2026-11-27): Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la ca…
   - `F-MACRO-RISK-PREMIA-HOLDOUT-A5-B` (2026-11-27): MACRO_RISK_PREMIA (41 ETFs adjclose 2006-2026, cero =F): evaluacion unica en HOLDOUT A5 (63…

@@ -1,4 +1,4 @@
-# Leer antes de cada corrida — índice obligatorio (v4, 2026-11-19)
+# Leer antes de cada corrida — índice obligatorio (v5, 2026-11-28)
 
 Estado: VIGENTE — pedido de Nico: «un documento que sea obligatorio leer para cada corrida, que sea un índice de todos los otros
 documentos que se deberían leer». La v3 responde a su segundo pedido: «asegurate que la cadena estándar no te permita cometerlos […] no
@@ -165,3 +165,24 @@ gate lo vio: lo encontró la pregunta de Nico («tiene una curva parecida a R, �
   primera o declara una regla apagada sin la segunda.
 - Ejemplo completo bien hecho: `docs/research/z_pico_20261119/RESULTADO_RAPIDA_Y_SEVERIDAD.md`; el error y su revisión:
   `docs/research/MIRADA_HUMANA_20261119.md`.
+
+
+## 8. Errores del 26–27 nov y su guarda (v5, 2026-11-28)
+Detalle de cada uno: `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (K58–K64).
+
+| Error | Qué pasó | Guarda | Dónde |
+|---|---|---|---|
+| Hora de una fuente externa distinta de la documentada (K58) | HistData: Nueva York con horario de verano, no «EST fijo»; T, R y Z no calibraban | código | `edgelab/research/alineacion_horaria.py::exigir_alineada`, en invierno y en verano, antes de medir |
+| Costo en la escala de otro instrumento o época (K59) | puntos de NQ restados a índices europeos en la escala de 2010: 5–7 pb en vez de ≈ 1 | guía | costo en pb del destino; publicar fijo y proporcional (K34) |
+| Cambiar la muestra después de ver el resultado (K60) | cripto 2019: se sacaron 3 meses en cero para pasar de t 1,64 a 1,73 y rotular CONFIRMA | guía + revisión cruzada | el veredicto sale de la muestra pre-registrada; lo demás es sensibilidad |
+| Insumo exógeno de otro mercado al transferir (K61) | VBB con VIX de EE. UU. en Europa y Asia | guía | insumo local o regla excluida, decidido en el pre-registro |
+| Recomendar una fuente de datos sin verificarla (K62) | TradingView no tiene intradía de bonos de BYMA | guía | verificar símbolo y temporalidad antes de recomendar una compra |
+| `registro_global.py` sin argumentos consolidaba (K63) | se reescribió el registro global sin querer | código | ayuda sin argumentos; `consolidar` explícito; `tests/test_guardas_20261127.py` |
+| Ventana móvil que cruza meses sellados (K64) | medias y desenlaces de BONOS-RATIOS tocaban meses HOLDOUT/EMBARGO | código (patrón) | máscara `limpio` de `tools/bonos_ratios.py::_serie` |
+| `ESTADO_VIVO.md` sin regenerar tras tocar FACTORES | CI en rojo (5 tests) | código (CI) | `tools/contexto_vivo.py --write` en el mismo commit |
+
+**Lo que salió bien y se reutiliza** (prácticas ATJ-28 a ATJ-31 de `docs/research_funnel_playbook.md`):
+- confianza sin forward (otros mercados, período anterior, placebo, Sharpe deflactado parejo);
+- compuerta de calibración del circuito de datos;
+- auditoría cruzada entre agentes con revisión de admisibilidad;
+- localizar un mecanismo por dónde no se transfiere.

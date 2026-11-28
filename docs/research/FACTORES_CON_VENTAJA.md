@@ -250,10 +250,20 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (41)
+## PALANCA_DE_DISENO (43)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
+- **Subir o bajar la confianza de una regla congelada sin esperar el forward: otros mercados con insumos locales, período anterior, placebo con la misma exposición (control N) y Sharpe deflactado parejo (N = 1 en un holdout único)** (`F-PALANCA-CONFIANZA-SIN-FORWARD`, 2026-11-28, sesion)
+  - Efecto: Carril 2: se transfiere a 8 índices (Sh 0,50, t 3,02) y le gana al placebo (t 2,07); afuera decae desde 2009, así que el tamaño esperado en vivo es 0,4–0,6. T y R: no se transfieren a Europa ni antes de costos, así que baja su confianza previa. En días, en vez de los 13–15 meses del forward
+  - Dónde: Cualquier regla congelada con un mecanismo que debería existir en otros mercados o períodos
+  - Siguiente: Aplicarla a cada candidata antes de pedir forward (ATJ-28); Carril 2 en EMD y con volatilidad local son las próximas (PLAN_ESPIRAL_20261127 #2–#3)
+  - Evidencia: `docs/research/confianza_sin_forward_20261127/RESULTADO.md`, `docs/research/trz_extranjeros_20261127/RESULTADO.md`, `docs/research_funnel_playbook.md`
+- **Antes de leer una prueba con datos transformados o de una fuente nueva, pasar una referencia conocida por el mismo circuito, calibrar módulo por módulo contra la corrida canónica y alinear la hora (K58)** (`F-PALANCA-CALIBRAR-CIRCUITO-DE-DATOS`, 2026-11-28, sesion)
+  - Efecto: TRZ-EXTRANJEROS: la compuerta destapó que HistData sella en hora de Nueva York con horario de verano (no EST fijo, como dice su documentación) y dejó Z sin leer (no calibra con CFD) en vez de reportarlo como refutado
+  - Dónde: Toda transferencia a otro instrumento, CFD contra futuros, fuentes intradía nuevas
+  - Siguiente: Usar a5.calibrar_por_sesion y alineacion_horaria.exigir_alineada en cada fuente nueva (ATJ-29)
+  - Evidencia: `docs/research/trz_extranjeros_20261127/PREREGISTRO.md`, `docs/research/trz_extranjeros_20261127/CALIBRACION_DIAGNOSTICO.json`, `edgelab/research/alineacion_horaria.py`
 - **Las series FundedSync de los estudios de cartera usan todos los meses, también los HOLDOUT de A5** (`F-FUNDEDSYNC-SIN-HOLDOUT-A5-PARA-VARIANTES-B`, 2026-11-27, agente)
   - Efecto: Corrección 2026-11-27: los stops ATR de R/Z/N/W NO se eligieron mirando el holdout; son la configuración de fundedsync_prop_opt_20261122 (DESC→REP) y la que corre en NT8. Sólo V_nm30_tp1400 y T_ES_adapt son variantes nuevas. Sigue en pie que los estudios de cartera (Antigravity y Claude) leyeron los 478 días HOLDOUT A5 de las series FundedSync. A igual volatilidad la regla de Claude no supera a la actual (WF 1,91 vs 1,89); Regla_V2_Clean (motores operables en NT8, pesos acotados) sí baja la caída intradía (−8.712 vs −14.499, Sharpe 1,94 vs 1,89).
   - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09

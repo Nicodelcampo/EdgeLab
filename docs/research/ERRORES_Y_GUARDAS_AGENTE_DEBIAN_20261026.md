@@ -209,6 +209,54 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
   - Guarda en código: `tests/research/test_cartera_lucid_calibracion.py::test_sim_cuenta_dll_sobre_minimo_intradia`.
   - Lo encontró la revisión pedida por Nico («quizás fuiste demasiado estricto»), al contrastar los dos simuladores.
 
+- **K58, hora de una fuente externa distinta de la documentada (2026-11-27, TRZ-EXTRANJEROS).**
+  - Qué pasó: HistData documenta «EST fijo», pero su sello es la hora de Nueva York con horario de verano y marca la apertura de la
+    vela. La compuerta de calibración falló en T, R y Z hasta que una correlación minuto a minuto contra NQ futuros mostró 1 h de
+    desfase en verano.
+  - Regla: toda fuente intradía nueva se alinea contra una referencia del mismo subyacente, en invierno y en verano, antes de medir.
+  - Guarda en código: `edgelab/research/alineacion_horaria.py::exigir_alineada` (`tests/research/test_alineacion_horaria.py`).
+- **K59, costo en la escala de otro instrumento o de otra época (2026-11-27, TRZ-EXTRANJEROS; lo encontró Antigravity).**
+  - Qué pasó: la fricción de NQ en puntos (1,5455) se restó a índices europeos llevados a la escala de NQ de cada día. En 2010–2019
+    (NQ 2.200–4.500) eso son 5–7 pb por viaje, contra ≈ 1 pb de un futuro europeo, y la t de −4,57 exageraba la caída (−1,37 con
+    costo proporcional). El veredicto no cambió: el bruto en 2020–2026 es ≈ 0.
+  - Regla: un costo trasladado a otro instrumento o a una escala transformada se expresa en pb del instrumento de destino y se publica
+    con su sensibilidad (fijo y proporcional). Es un costo estimado y declarado (K34).
+  - Guarda: guía (`LEER_ANTES_DE_CADA_CORRIDA.md` §8).
+- **K60, cambiar la muestra después de ver el resultado (2026-11-27, CRIPTO-V3-2019; addendum de Antigravity).**
+  - Qué pasó: la primaria pre-registrada (9 meses, t 1,64) se recalculó sin los 3 meses en cero (sin universo) y pasó a t 1,73,
+    rotulada CONFIRMA, sobre 6 meses.
+  - Regla: el veredicto sale de la muestra pre-registrada. Una exclusión decidida después es una sensibilidad: se publica y no cambia
+    el veredicto. Un mes sin posición es un retorno 0, no un dato faltante.
+  - Guarda: revisión cruzada entre agentes (la revirtió la revisión de Claude) y guía §8.
+- **K61, variable exógena de otro mercado en una prueba de transferencia (2026-11-27, CONFIANZA-SIN-FORWARD H1).**
+  - Qué pasó: VBB usaba el VIX de EE. UU. para decidir en DAX, Nikkei o ASX; dio negativo afuera y bajó la canasta.
+  - Regla: al transferir una regla a otro mercado, cada insumo exógeno se reemplaza por su equivalente local (VSTOXX, VHSI…) o la regla
+    se excluye. Se decide antes de mirar y se declara en el pre-registro.
+  - Guarda: guía §8.
+- **K62, recomendar una fuente de datos sin verificar que cubre el símbolo y la temporalidad (2026-11-27, bonos AR).**
+  - Qué pasó: recomendé pagar TradingView Premium para exportar intradía de bonos de BYMA. Antigravity lo verificó en el gráfico: para
+    bonos de BCBA todas las temporalidades intradía están deshabilitadas.
+  - Regla: antes de recomendar una compra, se verifica el símbolo exacto y la temporalidad (prueba gratis, captura o muestra). Si no
+    se pudo verificar, se dice explícitamente.
+  - Guarda: guía §8.
+- **K63, `registro_global.py` sin argumentos consolidaba el registro (2026-11-27).**
+  - Qué pasó: corrí la herramienta sin argumentos pensando en `preregistrado` y reescribió `TRIAL_REGISTRY_GLOBAL.jsonl`; se restauró con
+    `git checkout`.
+  - Guarda en código: sin argumentos sólo muestra la ayuda; consolidar exige `consolidar` (`tests/test_guardas_20261127.py`).
+- **K64, ventana móvil que cruza meses sellados (2026-11-27, BONOS-RATIOS).**
+  - Qué pasó: la media y el desvío móviles del ratio, y la ventana futura del desenlace, tomaban días de meses HOLDOUT o EMBARGO
+    vecinos a un mes DESC/REP.
+  - Regla: toda ventana (pasada o futura) de una observación DESC/REP tiene que caer entera en meses DESC/REP; si no, la observación
+    se marca SELLADO.
+  - Guarda en código: la máscara `limpio` de `tools/bonos_ratios.py::_serie` y de `tools/bonos_rotacion.py::_exceso`. Patrón a copiar en
+    cualquier serie diaria con ventanas largas sobre A5.
+- **Prácticas del 27-nov (sin K):**
+  - Al tocar `FACTORES.jsonl`, regenerar `ESTADO_VIVO.md` en el mismo commit (`tools/contexto_vivo.py --write`); si no, la compuerta
+    de corridas y el CI quedan en rojo.
+  - Un insumo intermedio construido con código corregido después (CSV del arnés con la hora mal) se borra antes de relanzar (familia
+    de K41).
+  - pandas con `datetime64[us]`: para pasar a segundos usar `.dt.as_unit("s")`; `// 10**9` da valores errados.
+
 - **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
   nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.
 - **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y

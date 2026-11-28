@@ -223,3 +223,18 @@ Auditoria completa y correcciones en código/registros ejecutadas tras hacer fas
   alcance de BONOS-ROTACION.
 - **No se acepta el CONFIRMA de CRIPTO-V3-2019:** sale de sacar los meses en cero después de ver el resultado, sobre 6 meses. El veredicto
   pre-registrado sigue NO_CONCLUYENTE. Detalle en `cripto_v3_2019_20261127/RESULTADO.md` §«Revisión Claude».
+
+## 15. Cierre del 27/28-nov: errores, guardas, virtudes y siguiente paso
+- **Errores convertidos en guardas (K58–K64):** `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` y `LEER_ANTES_DE_CADA_CORRIDA.md` §8 (v5).
+  - Guardas en código: alineación horaria de fuentes (`edgelab/research/alineacion_horaria.py`), `registro_global.py` sin
+    consolidación accidental, máscara de ventanas que tocan meses sellados.
+  - Guardas en la guía: costo en pb del destino, ningún cambio de muestra post hoc, insumos locales al transferir, verificar una fuente
+    de datos antes de recomendar pagarla.
+- **Virtudes que se reutilizan:** ATJ-28 a ATJ-31 en `docs/research_funnel_playbook.md`. Las dos primeras quedan también como
+  PALANCA_DE_DISENO en FACTORES (`F-PALANCA-CONFIANZA-SIN-FORWARD`, `F-PALANCA-CALIBRAR-CIRCUITO-DE-DATOS`).
+- **Siguiente paso, sin bonos:** `PLAN_ESPIRAL_20261127.md`. Recomendado: guardas (hechas), Carril 2 en EMD, Carril 2 con volatilidad
+  local, serie canónica de Carril 2; después el mecanismo de T por ETF apalancados.
+- **Bonos:** `biblioteca_ideas_20261028/OPERACIONES_AMIGO_AL29_AL30_MATRIZ_20261127.md` y `RATIOS_BONOS_FUENTES_DE_DATOS_20261127.md`
+  §6–§9.
+  - Grabador diario: `tools/bonos_masella_grabar.py`; la rueda del 2026-11-27 ya está grabada.
+  - Para el intradía histórico: BYMADATA Prefer o la API de Primary con cuenta. TradingView no sirve (K62).

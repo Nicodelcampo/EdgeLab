@@ -521,6 +521,44 @@ del agente y `generate.campanas_grilla`. Chequea:
 Cada campaña tiene sus condiciones con test, no toca el holdout, y si hay seguimiento declara la pérdida máxima estructural.
 El mapa error → chequeo está en `docs/research/areas_expansion_20261022/u1/REVISION_ERRORES_Y_PLAN_U1_CRUZADO.md` §4.
 
+### ATJ-28 — Subir o bajar la confianza sin esperar el forward (2026-11-27)
+
+Con una regla congelada se buscan datos que nadie usó para elegirla, en este orden:
+1. **otros mercados**, con insumos locales (K61);
+2. **el período anterior** a la muestra, sabiendo que puede ser la muestra con la que se publicó la regla;
+3. **un placebo con la misma exposición**: el control N, que está comprado los mismos días sin la señal;
+4. **Sharpe deflactado parejo**: N de la familia donde se eligió, N = 1 en un holdout único congelado.
+
+El tamaño esperado en vivo es la fracción que retiene fuera de muestra (literatura ≈ 0,57).
+- Herramienta: `tools/confianza_sin_forward.py`.
+- Caso: Carril 2 se transfiere a 8 índices y le gana al placebo. Afuera decae desde 2009, así que se espera 0,4–0,6 de Sharpe en vivo.
+- Contracaso: T y R no se transfieren a Europa ni antes de costos.
+
+### ATJ-29 — Compuerta de calibración del circuito de datos (2026-11-27)
+
+Cuando una prueba necesita transformar datos (hora, escala, volumen o fuente nueva), primero se pasa una referencia conocida por el
+mismo circuito y se compara con la corrida canónica, módulo por módulo (`a5.calibrar_por_sesion`). Un módulo que no calibra no se lee.
+- Así apareció el error de hora de HistData (K58) y se dejó Z sin leer, en vez de reportarlo como refutado.
+- Caso: `docs/research/trz_extranjeros_20261127/` (`CALIBRACION.json`, `CALIBRACION_DIAGNOSTICO.json`).
+
+### ATJ-30 — Auditoría cruzada entre agentes, con revisión de admisibilidad (2026-11-27)
+
+El trabajo de un agente lo audita otro (Claude ↔ Antigravity) sobre los archivos versionados, y el primero revisa la auditoría.
+- El 27-nov la auditoría encontró 4 problemas reales: la fricción en escala, el Sharpe deflactado con doble estándar, VBB con VIX
+  de EE. UU. y el alcance de BONOS-ROTACION.
+- La revisión rechazó un quinto, el CONFIRMA post hoc de cripto (K60).
+- Regla: una corrección que cambia un veredicto se acepta sólo si respeta el pre-registro. Si no, queda como sensibilidad.
+- Las dos partes dejan su firma en el documento: `Addendum de auditoría` y `Revisión Claude`.
+
+### ATJ-31 — Localizar el mecanismo por dónde NO se transfiere (2026-11-27)
+
+Un fracaso de transferencia también informa: si la ventaja sólo aparece en ciertos instrumentos y desde cierta fecha, el mecanismo
+tiene que ser algo presente justo ahí. Se escribe como hipótesis con predicciones de orden entre instrumentos y fechas, y se descarta
+lo que no encaja en el tiempo.
+- Caso: T sólo en NQ, ES y YM desde 2021, ni en Russell, ni en MidCap, ni en Europa.
+- Lo que no encaja en el tiempo: el 0DTE diario llega en 2022, después del quiebre.
+- La hipótesis que encaja, por probar: rebalanceo de ETF apalancados (`docs/research/PLAN_ESPIRAL_20261127.md` #2).
+
 ### Ruta ejecutable para estudios de evento y reglas con su propio simulador
 
 El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:
