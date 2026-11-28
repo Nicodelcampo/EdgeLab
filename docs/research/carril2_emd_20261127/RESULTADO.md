@@ -1,6 +1,6 @@
 # CARRIL2-EMD: Transferencia Congelada a MidCap 400 (`EMD`, `2006–2026-09`)
 
-Estado: RESULTADO — EF3 pre-registrado en [PREREGISTRO.md](PREREGISTRO.md) (`3` pruebas, `CARRIL2_EMD`). Costo K33 estimado base `0.4378` pts (`fricR=0.0123`), adverso `0.2` pts. `TERMINAL >= 2026-10-01` sellado.
+Estado: RESULTADO — EF3 pre-registrado en [PREREGISTRO.md](PREREGISTRO.md) (`3` pruebas, `CARRIL2_EMD`). Costo K33 estimado base `0.4378` pts (`fricR=0.0123`), adverso `0.6378` pts. `TERMINAL >= 2026-10-01` sellado.
 
 | Grupo (`R_base`) | Ventana | `Regla Sh (t)` | `Control N Sh (t)` | `Regla − Control Sh (t)` | `p (1-cola diff)` |
 | :--- | :--- | :---: | :---: | :---: | :---: |

@@ -73,7 +73,8 @@ def _mensual(T: pd.DataFrame, reglas: tuple[str, ...], col: str, ctrl: bool = Fa
 def main() -> int:
     exigir_contada(PRE)
     with costos.estimados_permitidos(PRE):
-        fr_base, fr_adv = [float(x) for x in friccion("EMD")]
+        fr_base, extra_adv = [float(x) for x in friccion("EMD")]
+        fr_adv = round(fr_base + extra_adv, 6)
 
     V = pd.read_parquet(Path(ruta("M1NT8")) / "cboe_volatility_daily.parquet")
     vc = V["vix_close"].copy()
